@@ -161,7 +161,7 @@ export default function PricingPage() {
       description: t("yearlyPlanDesc"),
       features: yearlyFeatures,
       action: {
-        label: t("continue", { defaultMessage: "Continue" }),
+        label: t("subscribe", { defaultMessage: "Subscribe" }),
         variant: "default" as const,
       },
       badge: "SAVE 42%",
@@ -205,7 +205,7 @@ export default function PricingPage() {
                   {plan.badge}
                 </div>
               )}
-              <CardHeader className="items-center">
+              <CardHeader className="items-center text-center">
                 <CardTitle className="text-3xl font-bold mb-2 bg-primary rounded-full text-primary-foreground px-4 py-2">
                   {plan.name}
                 </CardTitle>
@@ -221,7 +221,7 @@ export default function PricingPage() {
                   </span>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-6">
                 <ul className="space-y-2">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-center gap-2 text-sm">
