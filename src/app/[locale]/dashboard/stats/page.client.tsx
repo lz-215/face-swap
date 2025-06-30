@@ -47,8 +47,12 @@ export function DashboardPageClient({ user }: DashboardPageClientProps) {
     getMfaStatus();
   }, []);
 
-  const handleSignOut = () => {
-    void supabaseAuth.signOut();
+  const handleSignOut = async () => {
+    try {
+      await supabaseAuth.signOutWithRedirect();
+    } catch (error) {
+      console.error("Sign out error:", error);
+    }
   };
 
   // If we're still loading, show a skeleton
@@ -156,8 +160,8 @@ export function DashboardPageClient({ user }: DashboardPageClientProps) {
                     {loadingMfa
                       ? "Loading..."
                       : mfaEnabled
-                        ? "Enabled"
-                        : "Disabled"}
+                      ? "Enabled"
+                      : "Disabled"}
                   </p>
                 </div>
               </div>

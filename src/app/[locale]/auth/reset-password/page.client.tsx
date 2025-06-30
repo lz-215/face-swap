@@ -4,9 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useLocale } from "next-intl";
 
 import { SEO_CONFIG } from "~/app";
-import { supabaseClient } from "~/lib/supabase-auth-client";
 import { Button } from "~/ui/primitives/button";
 import { Card, CardContent } from "~/ui/primitives/card";
 import { Input } from "~/ui/primitives/input";
@@ -14,6 +14,7 @@ import { Label } from "~/ui/primitives/label";
 
 export function ResetPasswordClient() {
   const router = useRouter();
+  const locale = useLocale() as "en" | "zh";
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -25,40 +26,18 @@ export function ResetPasswordClient() {
     setError("");
     setLoading(true);
 
-    // 验证密码匹配
     if (password !== confirmPassword) {
       setError("密码不匹配");
       setLoading(false);
       return;
     }
 
-    // 验证密码强度
-    if (password.length < 8) {
-      setError("密码至少需要8个字符");
-      setLoading(false);
-      return;
-    }
-
     try {
-      // 使用 Supabase 更新密码
-      const { error: updateError } = await supabaseClient.auth.updateUser({
-        password,
-      });
-
-      if (updateError) {
-        throw updateError;
-      }
-
-      // 密码重置成功
-      setSuccess(true);
-
-      // 3秒后重定向到登录页面
-      setTimeout(() => {
-        router.push("/auth/sign-in?reset=success");
-      }, 3000);
+      // 由于我们现在只使用第三方登录，这个功能暂时禁用
+      setError("密码重置功能已禁用，请使用第三方登录");
     } catch (err) {
-      console.error("重置密码错误:", err);
-      setError("无法重置密码，请稍后再试");
+      setError("重置密码时出错");
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -92,13 +71,12 @@ export function ResetPasswordClient() {
           `}
         />
         <div className="absolute bottom-8 left-8 z-10 text-white">
-          <h1 className="text-3xl font-bold">{SEO_CONFIG.name}</h1>
+          <h1 className="text-3xl font-bold">{SEO_CONFIG.name[locale]}</h1>
           <p className="mt-2 max-w-md text-sm text-white/80">
-            {SEO_CONFIG.slogan}
+            {SEO_CONFIG.slogan[locale]}
           </p>
         </div>
       </div>
-
       {/* Right side - Reset password form */}
       <div
         className={`
@@ -113,64 +91,33 @@ export function ResetPasswordClient() {
               md:text-left
             `}
           >
-            <h2 className="text-3xl font-bold">重置密码</h2>
-            <p className="text-sm text-muted-foreground">请输入您的新密码</p>
+            <h2 className="text-3xl font-bold">密码重置已禁用</h2>
+            <p className="text-sm text-muted-foreground">
+              请使用第三方账户登录
+            </p>
           </div>
 
           <Card className="border-none shadow-sm">
             <CardContent className="pt-4">
-              {success ? (
-                <div className="space-y-4">
-                  <div className="rounded-lg bg-green-50 p-4 text-green-800">
-                    <p>密码已成功重置！</p>
-                    <p className="mt-2 text-sm">
-                      您将在几秒钟后被重定向到登录页面。
-                    </p>
-                  </div>
+              <div className="space-y-4">
+                <div className="rounded-lg bg-orange-50 p-4 text-orange-800">
+                  <p>密码重置功能已禁用</p>
+                  <p className="mt-2 text-sm">
+                    我们现在只支持第三方账户登录（GitHub 和 Google）
+                  </p>
                 </div>
-              ) : (
-                <form className="space-y-4" onSubmit={handleResetPassword}>
-                  <div className="grid gap-2">
-                    <Label htmlFor="password">新密码</Label>
-                    <Input
-                      id="password"
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      type="password"
-                      value={password}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="confirmPassword">确认密码</Label>
-                    <Input
-                      id="confirmPassword"
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                      type="password"
-                      value={confirmPassword}
-                    />
-                  </div>
-                  {error && (
-                    <div className="text-sm font-medium text-destructive">
-                      {error}
-                    </div>
-                  )}
-                  <Button className="w-full" disabled={loading} type="submit">
-                    {loading ? "重置中..." : "重置密码"}
-                  </Button>
-                  <div className="text-center text-sm text-muted-foreground">
-                    <Link
-                      className={`
-                        text-primary
-                        hover:underline
-                      `}
-                      href="/auth/sign-in"
-                    >
-                      返回登录
-                    </Link>
-                  </div>
-                </form>
-              )}
+                <div className="text-center">
+                  <Link
+                    className={`
+                      inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground
+                      hover:bg-primary/90
+                    `}
+                    href="/auth/sign-in"
+                  >
+                    前往登录页面
+                  </Link>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>

@@ -29,19 +29,12 @@ export function Header({ showAuth = true }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const t = useTranslations("Navbar");
 
-  const mainNavigation = [
+  const navigation = [
     { href: "/face-swap", name: t("faceSwap") },
     { href: "/pricing", name: t("pricing") },
   ];
 
-  const dashboardNavigation = [
-    { href: "/dashboard/history", name: t("history") },
-    { href: "/dashboard/profile", name: t("profile") },
-    { href: "/dashboard/settings", name: t("settings") },
-  ];
-
-  const isDashboard = user && pathname.startsWith("/dashboard"); // todo: remove /admin when admin role is implemented
-  const navigation = isDashboard ? dashboardNavigation : mainNavigation;
+  const isDashboard = user && pathname.startsWith("/dashboard");
 
   const renderContent = () => (
     <header
@@ -60,10 +53,7 @@ export function Header({ showAuth = true }: HeaderProps) {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-6">
             <Link className="flex items-center gap-2" href="/">
-              <span
-                className={cn("text-xl font-bold") + ""}
-                style={{ color: "#7cbd21" }}
-              >
+              <span className={cn("text-xl font-bold text-primary")}>
                 Swapify.AI
               </span>
             </Link>
@@ -132,11 +122,6 @@ export function Header({ showAuth = true }: HeaderProps) {
                         {t("login")}
                       </Button>
                     </Link>
-                    <Link href="/auth/sign-up">
-                      <Button size="sm" className="bg-[#7cbd21]">
-                        {t("signup")}
-                      </Button>
-                    </Link>
                   </div>
                 )}
               </div>
@@ -172,18 +157,7 @@ export function Header({ showAuth = true }: HeaderProps) {
                 href="/auth/sign-in"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Log in
-              </Link>
-              <Link
-                className={`
-                  block rounded-md bg-primary px-3 py-2 text-base font-medium
-                  text-primary-foreground
-                  hover:bg-primary/90
-                `}
-                href="/auth/sign-up"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t("signup")}
+                {t("login")}
               </Link>
             </div>
           )}
@@ -199,9 +173,7 @@ export function Header({ showAuth = true }: HeaderProps) {
           )}
           <div className="space-y-1 border-b px-4 py-3">
             <div className="flex items-center justify-between px-3 py-2">
-              <span className="text-base font-medium">
-                {t("common.language")}
-              </span>
+              <span className="text-base font-medium">{t("language")}</span>
               <LanguageSwitcher />
             </div>
           </div>

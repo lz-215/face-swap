@@ -18,14 +18,12 @@ const CreateDiscordIcon = createIcon(
       />
     </>
   ),
-  "0 0 16 16",
+  "0 0 16 16"
 );
 
 export function DiscordIcon({
   borderRadius = 2,
-  className = "flex h-12 w-12 min-w-12 items-center justify-center rounded-md bg-indigo-500 text-white",
-  color = "#5865F2",
-  glyphColor = "#fff",
+  className = "flex h-12 w-12 min-w-12 items-center justify-center rounded-md bg-primary text-primary-foreground",
   size = 32,
   title = "Discord logo",
 }: IconReseui) {
@@ -33,8 +31,6 @@ export function DiscordIcon({
     <div aria-label={title} className={className}>
       <CreateDiscordIcon
         borderRadius={borderRadius}
-        color={color}
-        glyphColor={glyphColor}
         size={size}
         title={title}
       />

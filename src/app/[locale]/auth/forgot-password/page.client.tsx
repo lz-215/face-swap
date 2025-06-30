@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useLocale } from "next-intl";
 
 import { SEO_CONFIG } from "~/app";
 import { supabaseAuth } from "~/lib/supabase-auth-client";
@@ -11,16 +12,38 @@ import { Card, CardContent } from "~/ui/primitives/card";
 import { Input } from "~/ui/primitives/input";
 import { Label } from "~/ui/primitives/label";
 
-export function ForgotPasswordClient() {
+interface ForgotPasswordPageClientProps {
+  forgotPasswordTitle: string;
+  forgotPasswordSubtitle: string;
+  emailLabel: string;
+  emailPlaceholder: string;
+  sendResetButton: string;
+  sendingResetButton: string;
+  successMessage: string;
+  errorMessage: string;
+  backToSignIn: string;
+}
+
+export function ForgotPasswordPageClient({
+  forgotPasswordTitle,
+  forgotPasswordSubtitle,
+  emailLabel,
+  emailPlaceholder,
+  sendResetButton,
+  sendingResetButton,
+  successMessage,
+  errorMessage,
+  backToSignIn,
+}: ForgotPasswordPageClientProps) {
+  const locale = useLocale() as "en" | "zh";
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleResetPassword = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setSuccess(false);
     setLoading(true);
 
     try {
@@ -30,11 +53,10 @@ export function ForgotPasswordClient() {
         throw resetError;
       }
 
-      // 重置成功
       setSuccess(true);
     } catch (err) {
-      console.error("密码重置错误:", err);
-      setError("无法发送重置密码邮件，请稍后再试");
+      setError(errorMessage);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -68,14 +90,13 @@ export function ForgotPasswordClient() {
           `}
         />
         <div className="absolute bottom-8 left-8 z-10 text-white">
-          <h1 className="text-3xl font-bold">{SEO_CONFIG.name}</h1>
+          <h1 className="text-3xl font-bold">{SEO_CONFIG.name[locale]}</h1>
           <p className="mt-2 max-w-md text-sm text-white/80">
-            {SEO_CONFIG.slogan}
+            {SEO_CONFIG.slogan[locale]}
           </p>
         </div>
       </div>
-
-      {/* Right side - Reset password form */}
+      {/* Right side - Forgot password form */}
       <div
         className={`
           flex items-center justify-center p-4
@@ -89,34 +110,37 @@ export function ForgotPasswordClient() {
               md:text-left
             `}
           >
-            <h2 className="text-3xl font-bold">重置密码</h2>
+            <h2 className="text-3xl font-bold">{forgotPasswordTitle}</h2>
             <p className="text-sm text-muted-foreground">
-              输入您的邮箱地址，我们将发送重置密码的链接
+              {forgotPasswordSubtitle}
             </p>
           </div>
 
           <Card className="border-none shadow-sm">
-            <CardContent className="pt-4">
+            <CardContent className="pt-2">
               {success ? (
-                <div className="space-y-4">
-                  <div className="rounded-lg bg-green-50 p-4 text-green-800">
-                    <p>重置密码链接已发送至您的邮箱。</p>
-                    <p className="mt-2 text-sm">
-                      请查看您的邮箱并点击链接重置密码。如果没有收到邮件，请检查您的垃圾邮件文件夹。
-                    </p>
+                <div className="space-y-4 text-center">
+                  <div className="text-sm font-medium text-green-600">
+                    {successMessage}
                   </div>
-                  <Button asChild className="w-full">
-                    <Link href="/auth/sign-in">返回登录</Link>
-                  </Button>
+                  <Link
+                    className={`
+                      text-primary underline-offset-4
+                      hover:underline
+                    `}
+                    href="/auth/sign-in"
+                  >
+                    {backToSignIn}
+                  </Link>
                 </div>
               ) : (
-                <form className="space-y-4" onSubmit={handleResetPassword}>
+                <form className="space-y-4" onSubmit={handleSubmit}>
                   <div className="grid gap-2">
-                    <Label htmlFor="email">邮箱</Label>
+                    <Label htmlFor="email">{emailLabel}</Label>
                     <Input
                       id="email"
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="name@example.com"
+                      placeholder={emailPlaceholder}
                       required
                       type="email"
                       value={email}
@@ -128,21 +152,21 @@ export function ForgotPasswordClient() {
                     </div>
                   )}
                   <Button className="w-full" disabled={loading} type="submit">
-                    {loading ? "发送中..." : "发送重置链接"}
+                    {loading ? sendingResetButton : sendResetButton}
                   </Button>
-                  <div className="text-center text-sm text-muted-foreground">
-                    <Link
-                      className={`
-                        text-primary
-                        hover:underline
-                      `}
-                      href="/auth/sign-in"
-                    >
-                      返回登录
-                    </Link>
-                  </div>
                 </form>
               )}
+              <div className="mt-6 text-center text-sm text-muted-foreground">
+                <Link
+                  className={`
+                    text-primary underline-offset-4
+                    hover:underline
+                  `}
+                  href="/auth/sign-in"
+                >
+                  {backToSignIn}
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>

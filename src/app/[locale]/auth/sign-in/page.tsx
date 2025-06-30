@@ -1,4 +1,4 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { SYSTEM_CONFIG } from "~/app";
 import { getCurrentSupabaseUserOrRedirect } from "~/lib/supabase-auth";
 
@@ -10,28 +10,21 @@ export default async function SignInPage() {
     SYSTEM_CONFIG.redirectAfterSignIn,
     true
   );
-  const t = useTranslations("SignIn");
+  const t = await getTranslations("SignIn");
 
   return (
     <SignInPageClient
       signInTitle={t("signInTitle")}
       signInSubtitle={t("signInSubtitle")}
-      emailLabel={t("emailLabel")}
-      emailPlaceholder={t("emailPlaceholder")}
-      passwordLabel={t("passwordLabel")}
-      forgotPasswordLink={t("forgotPasswordLink")}
-      signInButton={t("signInButton")}
-      signingInButton={t("signingInButton")}
-      continueWithSeparator={t("continueWithSeparator")}
       githubButton={t("githubButton")}
       googleButton={t("googleButton")}
-      noAccountPrompt={t("noAccountPrompt")}
-      signUpLink={t("signUpLink")}
-      successMessage={t("successMessage")}
-      invalidCredentialsError={t("invalidCredentialsError")}
       githubLoginError={t("githubLoginError")}
       googleLoginError={t("googleLoginError")}
       thirdPartyLoginError={t("thirdPartyLoginError")}
+      termsText={t("termsText")}
+      termsLink={t("termsLink")}
+      andText={t("andText")}
+      privacyLink={t("privacyLink")}
     />
   );
 }

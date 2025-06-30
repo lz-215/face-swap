@@ -22,12 +22,12 @@ export type SvgIcon =
 export function createIcon(
   displayName: SvgIcon,
   svgPath: (props: IconBaseProps) => React.ReactNode,
-  viewBox = "0 0 24 24",
+  viewBox = "0 0 24 24"
 ) {
   const Icon = ({
     borderRadius,
-    color = "#5865F2",
-    glyphColor = "#fff",
+    color,
+    glyphColor,
     ref,
     size = "1em",
     title,

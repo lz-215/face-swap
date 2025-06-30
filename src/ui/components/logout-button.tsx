@@ -1,18 +1,28 @@
-'use client'
+"use client";
 
-import { useRouter } from 'next/navigation'
+import { useState } from "react";
+import { useTranslations } from "next-intl";
 
-import { createClient } from '~/lib/supabase/client'
-import { Button } from '~/ui/primitives/button'
+import { supabaseAuth } from "~/lib/supabase-auth-client";
+import { Button } from "~/ui/primitives/button";
 
 export function LogoutButton() {
-  const router = useRouter()
+  const t = useTranslations("Navigation");
+  const [isLoading, setIsLoading] = useState(false);
 
   const logout = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/auth/login')
-  }
+    try {
+      setIsLoading(true);
+      await supabaseAuth.signOutWithRedirect();
+    } catch (error) {
+      console.error("Logout error:", error);
+      setIsLoading(false);
+    }
+  };
 
-  return <Button onClick={logout}>Logout</Button>
+  return (
+    <Button onClick={logout} disabled={isLoading} variant="destructive">
+      {isLoading ? "Signing out..." : t("signOut")}
+    </Button>
+  );
 }

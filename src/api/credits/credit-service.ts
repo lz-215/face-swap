@@ -25,46 +25,94 @@ export async function addBonusCredits(
   reason: string,
   metadata: Record<string, any> = {},
 ) {
+  console.log(`[addBonusCredits] 开始为用户 ${userId} 添加 ${amount} 积分，原因: ${reason}`);
+  
   if (amount <= 0) {
-    throw new Error("奖励积分必须大于0");
+    const error = "奖励积分必须大于0";
+    console.error(`[addBonusCredits] 错误: ${error}`);
+    throw new Error(error);
   }
 
-  // 获取用户积分余额
-  const userBalance = await getUserCreditBalance(userId);
-
-  // 开始数据库事务
   try {
-    // 1. 更新用户积分余额
-    const newBalance = userBalance.balance + amount;
+    // 使用数据库事务确保数据一致性
+    const result = await db.transaction(async (tx) => {
+      console.log(`[addBonusCredits] 开始数据库事务`);
+      
+      // 1. 获取或创建用户积分余额
+      let userBalance = await tx.query.userCreditBalanceTable.findFirst({
+        where: eq(userCreditBalanceTable.userId, userId),
+      });
 
-    await db
-      .update(userCreditBalanceTable)
-      .set({
+      if (!userBalance) {
+        console.log(`[addBonusCredits] 用户 ${userId} 积分余额不存在，正在创建`);
+        const newBalanceResult = await tx
+          .insert(userCreditBalanceTable)
+          .values({
+            balance: 0,
+            createdAt: new Date(),
+            id: createId(),
+            totalConsumed: 0,
+            totalRecharged: 0,
+            updatedAt: new Date(),
+            userId,
+          })
+          .returning();
+        
+        userBalance = newBalanceResult[0];
+        console.log(`[addBonusCredits] 创建用户积分余额成功: ${userBalance.id}`);
+      }
+
+      // 2. 计算新余额
+      const newBalance = userBalance.balance + amount;
+      console.log(`[addBonusCredits] 积分余额更新: ${userBalance.balance} -> ${newBalance}`);
+
+      // 3. 更新用户积分余额
+      await tx
+        .update(userCreditBalanceTable)
+        .set({
+          balance: newBalance,
+          updatedAt: new Date(),
+        })
+        .where(eq(userCreditBalanceTable.id, userBalance.id));
+      
+      console.log(`[addBonusCredits] 积分余额更新成功`);
+
+      // 4. 创建积分交易记录
+      const transactionId = createId();
+      await tx.insert(creditTransactionTable).values({
+        amount,
+        balanceAfter: newBalance,
+        createdAt: new Date(),
+        description: reason,
+        id: transactionId,
+        metadata: JSON.stringify(metadata),
+        type: "bonus",
+        userId,
+      });
+      
+      console.log(`[addBonusCredits] 积分交易记录创建成功: ${transactionId}`);
+
+      return {
+        added: amount,
         balance: newBalance,
-        updatedAt: new Date(),
-      })
-      .where(eq(userCreditBalanceTable.id, userBalance.id));
-
-    // 2. 创建积分交易记录
-    await db.insert(creditTransactionTable).values({
-      amount,
-      balanceAfter: newBalance,
-      createdAt: new Date(),
-      description: reason,
-      id: createId(),
-      metadata: JSON.stringify(metadata),
-      type: "bonus",
-      userId,
+        success: true,
+        transactionId,
+      };
     });
 
-    return {
-      added: amount,
-      balance: newBalance,
-      success: true,
-    };
+    console.log(`[addBonusCredits] 成功为用户 ${userId} 添加了 ${amount} 积分，新余额: ${result.balance}`);
+    return result;
+
   } catch (error) {
-    console.error("添加奖励积分失败:", error);
-    throw error;
+    console.error(`[addBonusCredits] 添加奖励积分失败 - 用户: ${userId}, 积分: ${amount}`, error);
+    
+    // 记录详细的错误信息
+    if (error instanceof Error) {
+      console.error(`[addBonusCredits] 错误详情: ${error.message}`);
+      console.error(`[addBonusCredits] 错误堆栈: ${error.stack}`);
+    }
+    
+    throw new Error(`添加奖励积分失败: ${error instanceof Error ? error.message : '未知错误'}`);
   }
 }
 
@@ -84,11 +132,13 @@ export async function consumeCredits(
 ) {
   // 获取操作所需积分
   const config = await getCreditConsumptionConfig(actionType);
+  // 如果未找到配置，则默认为1，并发出警告
+  let creditsRequired = 1;
   if (!config) {
-    throw new Error(`未找到操作类型 ${actionType} 的积分配置`);
+    console.warn(`未找到操作类型 "${actionType}" 的积分配置，将默认使用1个积分。`);
+  } else {
+    creditsRequired = config.creditsRequired;
   }
-
-  const creditsRequired = config.creditsRequired;
 
   // 获取用户积分余额
   const userBalance = await getUserCreditBalance(userId);

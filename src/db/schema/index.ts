@@ -4,7 +4,7 @@ export * from "./payments/types";
 
 export * from "./uploads/relations";
 // 从tables中导出表定义，但不包括relations
-export { uploadsTable } from "./uploads/tables";
+export { uploadsTable, faceSwapHistoryTable, faceSwapStatusEnum } from "./uploads/tables";
 export * from "./uploads/types";
 
 // 积分系统

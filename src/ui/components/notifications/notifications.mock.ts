@@ -4,43 +4,35 @@ import type { Notification } from "./notification-center";
 
 export const mockNotifications: Notification[] = [
   {
-    description: "Thank you for signing up. Explore our features.",
     id: "1",
+    type: "info" as const,
+    title: `Welcome to ${SEO_CONFIG.name.en}!`,
+    description: "Thank you for signing up. Let's get started!",
+    timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
     read: false,
-    timestamp: new Date(Date.now() - 60 * 1000), // 1 minute ago
-    title: `Welcome to ${SEO_CONFIG.name}!`,
-    type: "success",
   },
   {
-    description: "There was an issue with your payment method.",
     id: "2",
-    read: false,
-    timestamp: new Date(Date.now() - 5 * 60 * 1000), // 5 minutes ago
-    title: "Payment Failed",
-    type: "error",
+    type: "success" as const,
+    title: "Profile Updated",
+    description: "Your profile has been successfully updated.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
+    read: true,
   },
   {
-    description: "Your order #1234 has shipped.",
     id: "3",
+    type: "warning" as const,
+    title: "Payment Reminder",
+    description: "Your subscription will expire in 3 days.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
     read: false,
-    timestamp: new Date(Date.now() - 3600 * 1000), // 1 hour ago
-    title: "Order Shipped",
-    type: "info",
   },
   {
-    description: "The item on your wishlist is now back in stock!",
     id: "4",
+    type: "error" as const,
+    title: "Upload Failed",
+    description: "Failed to upload image. Please try again.",
+    timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
     read: true,
-    timestamp: new Date(Date.now() - 3600 * 1000), // 1 hour ago
-    title: "New Product Available",
-    type: "info",
-  },
-  {
-    description: "Get 10% off your next purchase.",
-    id: "5",
-    read: true,
-    timestamp: new Date(Date.now() - 2 * 86400 * 1000), // 2 days ago
-    title: "Discount Available!",
-    type: "warning",
   },
 ];

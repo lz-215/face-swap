@@ -2,6 +2,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { eq } from 'drizzle-orm';
 
 import { db } from '~/db';
+import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import {
   creditConsumptionConfigTable,
   creditTransactionTable,
@@ -24,7 +25,7 @@ export async function addRewardCredits(
 ): Promise<boolean> {
   try {
     // 开始事务
-    return await db.transaction(async (tx) => {
+    return await db.transaction(async (tx: PostgresJsDatabase<any>) => {
       // 获取用户积分余额
       const balance = await tx.query.userCreditBalanceTable.findFirst({
         where: eq(userCreditBalanceTable.userId, userId),
@@ -134,7 +135,7 @@ export async function consumeCredits(
     }
 
     // 开始事务
-    return await db.transaction(async (tx) => {
+    return await db.transaction(async (tx: PostgresJsDatabase<any>) => {
       // 获取用户积分余额
       const balance = await tx.query.userCreditBalanceTable.findFirst({
         where: eq(userCreditBalanceTable.userId, userId),

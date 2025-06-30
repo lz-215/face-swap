@@ -12,15 +12,13 @@
     "signIn": "登录",
     "signInWithEmail": "使用邮箱登录",
     "signInWithGoogle": "使用谷歌登录",
-    "signUp": "注册",
-    "signUpWithEmail": "使用邮箱注册",
-    "signUpWithGoogle": "使用谷歌注册",
     "agreeToTerms": "注册即表示您同意我们的",
     "and": "和",
     "terms": "服务条款",
     "privacy": "隐私政策",
     "subTitle": "登录或创建账户以继续",
-    "emailPlaceholder": "请输入邮箱"
+    "emailPlaceholder": "请输入邮箱",
+    "redirecting": "登录成功，正在跳转..."
   },
   "Common": {
     "cancel": "取消",
@@ -85,7 +83,7 @@
     "tryItNow": "立即体验",
     "heroTitle": "AI人脸替换在线 - 照片视频一键变脸",
     "heroDesc1": "用AI技术轻松实现照片和视频换脸。",
-    "heroDesc2": "上传图片，VidMage为你生成有趣且真实的换脸效果。",
+    "heroDesc2": "上传图片，Swapify.AI为你生成有趣且真实的换脸效果。",
     "heroDesc3": "免费在线体验，秒出结果！",
     "rating": "评分",
     "colorizePhoto": "照片上色",
@@ -106,17 +104,17 @@
     "inALeagueOfItsOwn": "独一无二的存在",
     "getPremium": "升级会员",
     "tryFaceSwapNow": "立即体验AI换脸",
-    "tryFaceSwapNowDesc": "释放你的创造力——用VidMage轻松实现照片和视频换脸。免费开始，让你的创意成真！",
+    "tryFaceSwapNowDesc": "释放你的创造力——用Swapify.AI轻松实现照片和视频换脸。免费开始，让你的创意成真！",
     "exploreAITools": "探索我们的AI工具",
     "tryTemplatesBelow": "试用以下换脸模板",
-    "howToSwapTitle": "如何用VidMage在线换脸",
-    "howToSwapDesc": "使用VidMage先进的AI工具，快速在照片中换脸。只需几个简单步骤，即可在几分钟内创造独特有趣的换脸作品。",
+    "howToSwapTitle": "如何用Swapify.AI在线换脸",
+    "howToSwapDesc": "使用Swapify.AI先进的AI工具，快速在照片中换脸。只需几个简单步骤，即可在几分钟内创造独特有趣的换脸作品。",
     "step1Title": "步骤1：上传原始图片",
     "step1Desc": "首先上传你想要换脸的照片。这将作为你的基础图片。我们的工具会确保面部以外的区域保持不变，实现无缝效果。",
     "step2Title": "步骤2：添加人脸图片",
     "step2Desc": "上传你想用于换脸的人脸图片，可以是你自己、朋友，甚至是喜欢的角色。确保图片清晰，以获得最佳效果。",
     "step3Title": "步骤3：一键换脸",
-    "step3Desc": "点击换脸按钮，让VidMage的AI为你实现魔法。几秒钟后，你的换脸图片就会自然、真实地生成。",
+    "step3Desc": "点击换脸按钮，让Swapify.AI的AI为你实现魔法。几秒钟后，你的换脸图片就会自然、真实地生成。",
     "faqsTitle": "AI换脸常见问题",
     "faq1q": "什么是AI换脸？",
     "faq1a": "AI换脸是一种由人工智能驱动的技术，可以将图片或视频中的某个人脸替换为另一个人脸。该技术通过分析面部特征、表情和光照条件，实现自然流畅的换脸效果。",
@@ -125,20 +123,33 @@
     "faq3q": "AI换脸安全吗？",
     "faq3a": "是的，您的隐私是我们的首要任务。上传的照片和生成的结果会在24-48小时内删除，整个过程中不会收集任何个人数据。",
     "faq4q": "可以在手机上换脸吗？",
-    "faq4a": "可以，VidMage完全兼容Safari、Chrome等移动端浏览器，支持iPhone和安卓设备在线换脸。",
+    "faq4a": "可以，Swapify.AI完全兼容Safari、Chrome等移动端浏览器，支持iPhone和安卓设备在线换脸。",
     "faq5q": "支持性别互换吗？",
-    "faq5a": "支持，您可以用VidMage将男性变为女性，或反之，非常适合娱乐和创意内容。",
-    "userTestimonialsTitle": "用户怎么评价VidMage",
+    "faq5a": "支持，您可以用Swapify.AI将男性变为女性，或反之，非常适合娱乐和创意内容。",
+    "userTestimonialsTitle": "用户怎么评价Swapify.AI",
     "testimonial1Title": "非常适合我的营销活动！",
-    "testimonial1Content": "VidMage已成为我制作吸睛营销内容的首选工具。效果总是令人印象深刻且专业，让我们的活动独一无二。即使没有设计基础也很容易上手。",
+    "testimonial1Content": "Swapify.AI已成为我制作吸睛营销内容的首选工具。效果总是令人印象深刻且专业，让我们的活动独一无二。即使没有设计基础也很容易上手。",
     "testimonial1Author": "Michael Brown - 市场经理",
     "testimonial2Title": "用过的最棒的换脸工具！",
-    "testimonial2Content": "我用过好几个换脸应用，但VidMage最出色。界面易用，换脸效果自然流畅。朋友们看到我做的搞笑换脸都笑疯了，强烈推荐！",
+    "testimonial2Content": "我用过好几个换脸应用，但Swapify.AI最出色。界面易用，换脸效果自然流畅。朋友们看到我做的搞笑换脸都笑疯了，强烈推荐！",
     "testimonial2Author": "Emily Taylor - 社交媒体达人",
     "testimonial3Title": "真实到难以置信！",
     "testimonial3Content": "换脸效果太自然了！AI融合得非常完美，结果无缝衔接。我把自己的脸换到名画里，看起来就像真的属于那里。绝对是我用过最好的换脸工具！",
     "testimonial3Author": "Jessica Lawson",
     "swapNow": "立即换脸"
+  },
+  "SignIn": {
+    "signInTitle": "登录",
+    "signInSubtitle": "使用第三方账户登录",
+    "githubButton": "使用 GitHub 登录",
+    "googleButton": "使用 Google 登录",
+    "githubLoginError": "GitHub 登录失败",
+    "googleLoginError": "Google 登录失败",
+    "thirdPartyLoginError": "第三方登录出错",
+    "termsText": "登录即表示您同意我们的",
+    "termsLink": "服务条款",
+    "andText": "和",
+    "privacyLink": "隐私政策"
   },
   "Navigation": {
     "account": "账户",
@@ -251,25 +262,106 @@
     "security": "安全",
     "systemDefault": "系统默认",
     "theme": "主题",
-    "twoFactorAuthentication": "两步验证"
+    "twoFactorAuthentication": "双重认证"
   },
   "User": {
     "email": "邮箱",
     "firstName": "名",
     "lastName": "姓",
-    "name": "姓名",
+    "name": "名称",
     "password": "密码",
     "profile": "个人资料",
     "username": "用户名"
   },
   "common": {
     "selectLanguage": "选择语言",
-    "language": "Language",
-    "loading": "Loading"
+    "language": "语言",
+    "loading": "加载中..."
   },
   "nav": {
+    "login": "登录"
+  },
+  "AISwapFaceCases": {
+    "swapNow": "立即换脸",
+    "mainTitle": "用Swapify.AI释放创造力",
+    "mainDesc": "Swapify.AI为视频和照片提供无缝、免费的换脸体验。无论是为了娱乐、制作表情包还是商业用途，只需几次点击，即可实现无与伦比的精准度和真实感。",
+    "paintingTitle": "在画作上换脸",
+    "paintingDesc": "有没有想过把自己变成蒙娜丽莎或《最后的晚餐》中的人物？通过\"在画作上换脸\"功能，您可以将永恒的杰作变成个性化的艺术品。上传您的照片，看看您的脸如何无缝地融入《星夜》或《戴珍珠耳环的少女》等标志性画作中。这不仅有趣，也是一种与艺术史联系的独特方式。",
+    "genderTitle": "与任何人交换性别，增添乐趣",
+    "genderDesc": "使用Swapify.AI的AI驱动工具，体验性别互换的乐趣！恶作剧地在朋友的照片中交换他们的性别，或者改变家人的性别，看看他们作为异性的样子。",
+    "timeTitle": "时空穿梭",
+    "timeDesc": "与历史人物或来自另一种文化的人交换面孔会是什么感觉？通过我们的\"时空穿梭\"功能，您就能找到答案！想象一下，看到您的脸变成克娄巴特拉、阿尔伯特·爱因斯坦，甚至是中世纪的骑士。",
+    "makeupTitle": "视觉化妆实验",
+    "makeupDesc": "想尝试大胆的新妆容又不想做出承诺？通过\"视觉化妆实验\"，您可以与化妆模特或名人换脸，测试大胆的眼线、鲜艳的唇色，甚至是独特的发型。",
+    "costumeTitle": "节日服装装扮",
+    "costumeDesc": "通过我们的\"节日服装装扮\"功能，让节日气氛活跃起来。在圣诞节把自己变成圣诞老人，在万圣节变成一个恐怖的鬼魂，甚至变成复活节兔子。您还可以与朋友换脸，创建有趣的节日主题合影。"
+  },
+  "TemplateSection": {
+    "title": "试用以下换脸模板",
+    "alt": "模板{index}"
+  },
+  "HowToSwap": {
+    "title": "如何用Swapify.AI在线换脸",
+    "desc": "使用Swapify.AI先进的AI工具，快速在照片中换脸。只需几个简单步骤，即可在几分钟内创造独特有趣的换脸作品。",
+    "step1Title": "步骤1：上传原始图片",
+    "step1Desc": "首先上传你想要换脸的照片。这将作为你的基础图片。我们的工具会确保面部以外的区域保持不变，实现无缝效果。",
+    "step2Title": "步骤2：添加人脸图片",
+    "step2Desc": "上传你想用于换脸的人脸图片，可以是你自己、朋友，甚至是喜欢的角色。确保图片清晰，以获得最佳效果。",
+    "step3Title": "步骤3：一键换脸",
+    "step3Desc": "点击换脸按钮，让Swapify.AI的AI为你实现魔法。几秒钟后，你的换脸图片就会自然、真实地生成。"
+  },
+  "Testimonials": {
+    "userTestimonialsTitle": "用户怎么评价Swapify.AI",
+    "testimonial1Title": "非常适合我的营销活动！",
+    "testimonial1Content": "Swapify.AI已成为我制作吸睛营销内容的首选工具。效果总是令人印象深刻且专业，让我们的活动独一无二。即使没有设计基础也很容易上手。",
+    "testimonial1Author": "Michael Brown - 市场经理",
+    "testimonial2Title": "用过的最棒的换脸工具！",
+    "testimonial2Content": "我用过好几个换脸应用，但Swapify.AI最出色。界面易用，换脸效果自然流畅。朋友们看到我做的搞笑换脸都笑疯了，强烈推荐！",
+    "testimonial2Author": "Emily Taylor - 社交媒体达人",
+    "testimonial3Title": "真实到难以置信！",
+    "testimonial3Content": "换脸效果太自然了！AI融合得非常完美，结果无缝衔接。我把自己的脸换到名画里，看起来就像真的属于那里。绝对是我用过最好的换脸工具！",
+    "testimonial3Author": "Jessica Lawson"
+  },
+  "FAQ": {
+    "faqsTitle": "AI换脸常见问题",
+    "faq1q": "什么是AI换脸？",
+    "faq1a": "AI换脸是一种利用人工智能在照片或视频中将一张脸替换成另一张脸的技术。它通过分析面部特征和光照来创造无缝且逼真的效果。",
+    "faq2q": "AI换脸是免费的吗？",
+    "faq2a": "是的，Swapify.AI提供免费的在线换脸工具，并提供大量的积分供您入门。您也可以购买额外的积分或订阅计划以获得更多功能。",
+    "faq3q": "换一张脸需要多长时间？",
+    "faq3a": "这个过程非常快。大多数换脸在几秒钟内完成，具体取决于图像的大小和质量。",
+    "faq4q": "哪种类型的图像最适合换脸？",
+    "faq4a": "为获得最佳效果，请使用光线充足、面部清晰可见的高质量图像。避免使用有手或头发遮挡面部的图像。",
+    "faq5q": "我可以在视频中使用AI换脸吗？",
+    "faq5a": "是的，我们的工具支持照片和视频。您可以上传视频，在任何场景中换脸，就像在照片中换脸一样简单。",
+    "faq6q": "我的数据安全吗？",
+    "faq6a": "我们非常重视您的隐私。所有上传的图像都会被安全处理，不会与第三方共享。您可以随时删除您的数据。"
+  },
+  "History": {
+    "title": "历史记录",
+    "loading": "正在加载历史记录...",
+    "noHistory": "未找到历史记录。",
+    "status": "状态",
+    "createdAt": "创建时间",
+    "auth": {
+      "title": "需要登录",
+      "description": "请登录以查看您的换脸历史记录。",
+      "loginButton": "登录"
+    }
+  },
+  "Navbar": {
+    "home": "首页",
+    "faceSwap": "AI换脸",
+    "pricing": "定价",
     "login": "登录",
-    "signup": "注册"
+    "userCenter": "个人中心",
+    "dashboard": "控制台",
+    "stats": "统计",
+    "profile": "个人资料",
+    "settings": "设置",
+    "logout": "退出登录",
+    "history": "历史记录",
+    "noData": "暂无历史记录"
   },
   "FaceSwap": {
     "mainTitle": "AI人脸替换",
@@ -307,15 +399,40 @@
     "errorSwapError": "换脸出错，请稍后重试",
     "featureMac": "Supports Mac",
     "before": "Before",
-    "after": "After"
-  },
-  "ExploreTools": {
-    "title": "探索我们的AI工具",
-    "cardTitle": "AI工具 {index}"
+    "after": "After",
+    "loginPrompt": {
+      "title": "需要登录才能使用换脸功能",
+      "description": "登录后即可享受AI人脸替换服务，还可以查看历史记录和管理您的作品。",
+      "benefits": [
+        "无限制使用AI人脸替换",
+        "保存和管理换脸历史",
+        "高质量无水印结果",
+        "优先处理速度"
+      ],
+      "loginButton": "立即登录",
+      "cancelButton": "稍后再说"
+    },
+    "info": {
+      "validatingFile": "正在验证文件...",
+      "checkingAuth": "正在检查认证状态..."
+    },
+    "success": {
+      "imageUploaded": "图片上传成功！",
+      "faceSwapComplete": "换脸完成！"
+    },
+    "error": {
+      "missingImages": "请先上传两张图片再进行换脸。",
+      "noCreditsLeft": "积分不足，请先充值！",
+      "validationFailed": "文件验证失败，请重试。",
+      "faceSwapFailed": "换脸失败，请重试。"
+    },
+    "warning": {
+      "creditConsumptionFailed": "换脸已完成，但积分扣除失败。"
+    }
   },
   "FaceSwapTypes": {
     "title": "革命性的照片换脸工具，适用于各种场合",
-    "desc": "让您的照片焕发生机，实现无缝换脸。不论是娱乐、创意还是特殊项目，VidMage都能让您轻松替换照片中的人脸。上传图片，轻松换脸，几秒钟即可获得逼真高质量的效果。非常适合制作有趣的编辑或与朋友分享欢乐！",
+    "desc": "让您的照片焕发生机，实现无缝换脸。不论是娱乐、创意还是特殊项目，Swapify.AI都能让您轻松替换照片中的人脸。上传图片，轻松换脸，几秒钟即可获得逼真高质量的效果。非常适合制作有趣的编辑或与朋友分享欢乐！",
     "card1Title": "节日服装换装",
     "card1Desc": "用我们的节日服装换装功能，轻松变身圣诞老人、幽灵或复活节兔子。还能与朋友换脸，拍摄有趣的合照。非常适合个性化贺卡、社交媒体或单纯娱乐。上传照片，选择服装，享受乐趣！",
     "card2Title": "表情包换脸",
@@ -323,76 +440,6 @@
     "card3Title": "动漫换脸",
     "card3Desc": "在鸣人和佐助之间换脸，或让皮卡丘拥有独特表情。非常适合动漫爱好者和内容创作者！",
     "swapNow": "立即换脸"
-  },
-  "AISwapFaceCases": {
-    "mainTitle": "释放创造力，体验VidMage AI人脸替换",
-    "mainDesc": "VidMage为视频和照片提供无缝且免费的换脸体验。不论是娱乐、表情包还是商业用途，只需几步即可实现高精度、真实的变脸。",
-    "paintingTitle": "名画换脸",
-    "paintingDesc": "想象自己成为蒙娜丽莎或最后的晚餐中的人物？名画换脸让你与经典艺术作品无缝融合，体验独特的艺术乐趣。",
-    "genderTitle": "趣味性别互换",
-    "genderDesc": "用AI工具体验性别互换，恶搞朋友或家人，或看看自己变成异性是什么样子。",
-    "timeTitle": "时空穿越换脸",
-    "timeDesc": "和历史人物或异域文化人物换脸，体验不同历史和文化的装扮。",
-    "makeupTitle": "虚拟妆容实验",
-    "makeupDesc": "无需实际化妆，体验各种妆容和发型，轻松找到最适合自己的风格。",
-    "costumeTitle": "节日服装换装",
-    "costumeDesc": "变身圣诞老人、万圣节幽灵或复活节兔子，制作有趣的节日合影和贺卡。",
-    "swapNow": "立即换脸"
-  },
-  "TemplateSection": {
-    "title": "试用以下换脸模板",
-    "alt": "模板 {index}"
-  },
-  "HowToSwap": {
-    "title": "如何使用VidMage在线换脸",
-    "desc": "使用VidMage先进的AI工具，快速实现照片换脸。只需按照以下简单步骤，几分钟内即可创建独特有趣的换脸作品。",
-    "step1Title": "步骤1：上传原始图片",
-    "step1Desc": "首先上传你想要换脸的照片。这将作为你的基础图片。我们的工具会确保面部以外的区域保持不变，实现无缝效果。",
-    "step2Title": "步骤2：添加人脸图片",
-    "step2Desc": "上传你想用于换脸的人脸图片，可以是你自己、朋友，甚至是喜欢的角色。确保图片清晰，以获得最佳效果。",
-    "step3Title": "步骤3：一键换脸",
-    "step3Desc": "点击换脸按钮，让VidMage的AI为你实现魔法。几秒钟后，你的换脸图片就会自然、真实地生成。",
-    "swapNow": "立即换脸"
-  },
-  "Testimonials": {
-    "userTestimonialsTitle": "用户怎么评价VidMage",
-    "testimonial1Title": "非常适合我的营销活动！",
-    "testimonial1Content": "VidMage已成为我制作吸睛营销内容的首选工具。效果总是令人印象深刻且专业，让我们的活动独一无二。即使没有设计基础也很容易上手。",
-    "testimonial1Author": "Michael Brown - 市场经理",
-    "testimonial2Title": "用过的最棒的换脸工具！",
-    "testimonial2Content": "我用过好几个换脸应用，但VidMage最出色。界面易用，换脸效果自然流畅。朋友们看到我做的搞笑换脸都笑疯了，强烈推荐！",
-    "testimonial2Author": "Emily Taylor - 社交媒体达人",
-    "testimonial3Title": "真实到难以置信！",
-    "testimonial3Content": "换脸效果太自然了！AI融合得非常完美，结果无缝衔接。我把自己的脸换到名画里，看起来就像真的属于那里。绝对是我用过最好的换脸工具！",
-    "testimonial3Author": "Jessica Lawson"
-  },
-  "FAQ": {
-    "faqsTitle": "AI换脸常见问题",
-    "faq1q": "什么是AI换脸？",
-    "faq1a": "AI换脸是一种由人工智能驱动的技术，可以将图片或视频中的某个人脸替换为另一个人脸。该技术通过分析面部特征、表情和光照条件，实现自然流畅的换脸效果。",
-    "faq2q": "AI换脸的原理是什么？",
-    "faq2a": "AI换脸采用先进的深度学习算法（如GAN），通过分析和映射关键面部特征（如眼睛、鼻子、嘴巴），实现无缝融合，并自动调整光照、肤色和表情，使换脸结果自然真实。",
-    "faq3q": "AI换脸安全吗？",
-    "faq3a": "是的，您的隐私是我们的首要任务。上传的照片和生成的结果会在24-48小时内删除，整个过程中不会收集任何个人数据。",
-    "faq4q": "可以在手机上换脸吗？",
-    "faq4a": "可以，VidMage完全兼容Safari、Chrome等移动端浏览器，支持iPhone和安卓设备在线换脸。",
-    "faq5q": "支持性别互换吗？",
-    "faq5a": "支持，您可以用VidMage将男性变为女性，或反之，非常适合娱乐和创意内容。"
-  },
-  "Navbar": {
-    "home": "首页",
-    "faceSwap": "人脸替换",
-    "pricing": "定价",
-    "login": "登录",
-    "signup": "注册",
-    "userCenter": "个人中心",
-    "dashboard": "控制台",
-    "stats": "统计",
-    "profile": "个人资料",
-    "settings": "设置",
-    "logout": "退出登录",
-    "history": "历史记录",
-    "noData": "暂无历史记录"
   },
   "PricingPage": {
     "choosePlan": "选择你的套餐",
@@ -448,33 +495,35 @@
     "contactTitle": "联系我们",
     "contact": "如对本服务条款有任何疑问，请通过 support@example.com 联系我们。"
   },
-  "history": {
-    "_": "History",
-    "noData": "暂无历史记录",
-    "preview": "预览",
-    "type": "类型",
-    "uploadedAt": "上传时间",
-    "credits": "积分"
-  },
   "Command": {
     "title": "命令菜单"
   },
-  "SignUpPage": {
-    "pageTitle": "创建账户",
-    "pageDescription": "输入您的详细信息创建账户",
-    "nameLabel": "姓名",
-    "namePlaceholder": "张三",
-    "emailLabel": "邮箱",
-    "emailPlaceholder": "name@example.com",
-    "passwordLabel": "密码",
-    "emailInUseError": "该邮箱已被注册，请尝试使用其他邮箱",
-    "signUpError": "注册失败，请稍后再试",
-    "githubSignUpError": "GitHub 注册失败",
-    "googleSignUpError": "Google 注册失败",
-    "createAccountButton": "创建账户",
-    "creatingAccountButton": "创建账户中...",
-    "orContinueWith": "或继续使用",
-    "haveAccount": "已有账户?",
-    "signIn": "登录"
+  "Dashboard": {
+    "loading": "正在加载您的仪表板...",
+    "welcomeBack": "欢迎回来！",
+    "active": "有效",
+    "currentCredits": "当前积分",
+    "totalRecharged": "总计充值",
+    "totalUsed": "总计已用",
+    "available": "可用",
+    "empty": "空闲",
+    "total": "总计",
+    "used": "已用",
+    "accountId": "账户ID",
+    "accountIdDesc": "您的唯一标识符",
+    "quickStats": "快速统计",
+    "quickStatsDesc": "使用概况",
+    "efficiencyRate": "效率率",
+    "remaining": "剩余",
+    "credits": "积分",
+    "copy": "复制",
+    "copied": "已复制",
+    "newFaceSwap": "新换脸",
+    "needCreditsToSwap": "需要积分才能换脸",
+    "buyMoreCredits": "购买更多积分",
+    "creditsDepleted": "积分已耗尽",
+    "creditsDepletedDesc": "您已用完所有积分！购买更多积分以继续使用换脸功能。",
+    "rechargeNow": "立即充值",
+    "failedToLoad": "加载失败"
   }
-}
+} 

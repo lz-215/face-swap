@@ -3,10 +3,14 @@ import type Stripe from "stripe";
 
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
 
 import { handleCreditRechargeSuccess } from "~/api/credits/credit-service";
 import { syncSubscription } from "~/api/payments/stripe-service";
+import { addBonusCredits } from "~/api/credits/credit-service";
 import { stripe } from "~/lib/stripe";
+import { db } from "~/db";
+import { userTable } from "~/db/schema";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -55,16 +59,97 @@ async function handleSubscriptionChange(event: any) {
   const subscription = event.data.object as Stripe.Subscription;
   const customerId = subscription.customer as string;
 
+  console.log(`[webhook] 处理订阅变更事件: ${event.type}, 订阅ID: ${subscription.id}, 客户ID: ${customerId}`);
+
   // 获取关联的用户 ID
   const customer = await stripe.customers.retrieve(customerId);
   if (!customer || customer.deleted) {
+    console.error(`[webhook] 找不到客户: ${customerId}`);
     throw new Error("找不到客户");
   }
 
+  console.log(`[webhook] 客户信息`, {
+    id: customer.id,
+    email: customer.email,
+    name: customer.name,
+    metadata: customer.metadata,
+  });
+
   // 从元数据中获取用户 ID
-  const userId = customer.metadata.userId;
+  let userId = customer.metadata.userId;
+  
+  // 如果没有userId metadata，尝试通过email匹配用户
+  if (!userId && customer.email) {
+    console.log(`[webhook] 客户没有userId metadata，尝试通过email匹配: ${customer.email}`);
+    
+    try {
+      // 通过email查找用户
+      const user = await db.query.userTable.findFirst({
+        where: eq(userTable.email, customer.email),
+      });
+      
+      if (user) {
+        userId = user.id;
+        console.log(`[webhook] 通过email找到用户: ${userId}`);
+        
+        // 更新客户的metadata以便后续使用
+        await stripe.customers.update(customerId, {
+          metadata: {
+            ...customer.metadata,
+            userId: userId,
+            linkedBy: "email_match",
+            linkedAt: new Date().toISOString(),
+          },
+        });
+        
+        console.log(`[webhook] 已更新客户metadata，关联到用户: ${userId}`);
+      } else {
+        console.warn(`[webhook] 未找到email为 ${customer.email} 的用户`);
+      }
+    } catch (error) {
+      console.error(`[webhook] 通过email查找用户失败:`, error);
+    }
+  }
+
+  // 如果仍然没有找到用户ID，记录为待处理订阅
   if (!userId) {
-    throw new Error("找不到用户 ID");
+    console.error(`[webhook] 无法确定用户ID`, {
+      customerId,
+      customerEmail: customer.email,
+      subscriptionId: subscription.id,
+      eventType: event.type,
+    });
+
+    // 这里可以发送通知或记录到待处理队列
+    // 暂时抛出错误，但不影响webhook的整体处理
+    console.warn(`[webhook] 跳过积分处理 - 无法确定用户ID`);
+    
+    // 只同步订阅数据，不处理积分
+    try {
+      // 获取商品 ID
+      let productId = "";
+      if (subscription.items.data.length > 0) {
+        const product = await stripe.products.retrieve(
+          subscription.items.data[0].price.product as string,
+        );
+        productId = product.id;
+      }
+
+      // 使用placeholder userId来同步订阅（后续可以手动更新）
+      await syncSubscription(
+        `pending_${customerId}`, // 使用特殊的userId格式
+        customerId,
+        subscription.id,
+        productId,
+        subscription.status,
+      );
+      
+      console.log(`[webhook] 已记录待处理订阅: ${subscription.id}`);
+    } catch (syncError) {
+      console.error(`[webhook] 同步待处理订阅失败:`, syncError);
+    }
+    
+    return; // 提前返回，不处理积分
   }
 
   // 获取商品 ID
@@ -84,6 +169,83 @@ async function handleSubscriptionChange(event: any) {
     productId,
     subscription.status,
   );
+
+  console.log(`[webhook] 订阅数据同步完成`);
+
+  // 如果是订阅创建且状态为active，添加对应积分
+  if (event.type === "customer.subscription.created" && subscription.status === "active") {
+    console.log(`[webhook] 订阅创建成功，开始为用户 ${userId} 添加积分`);
+    
+    try {
+      // 获取价格信息来判断订阅类型
+      const priceId = subscription.items.data[0]?.price?.id;
+      let creditsToAdd = 120; // 默认月付积分
+      let description = "订阅成功赠送积分";
+
+      // 根据价格ID或金额判断订阅类型
+      const amount = subscription.items.data[0]?.price?.unit_amount; // 金额（分）
+      
+      console.log(`[webhook] 订阅价格信息 - priceId: ${priceId}, amount: ${amount}`);
+      
+      if (amount === 1690) {
+        // 月付计划 ($16.90) 或测试计划
+        creditsToAdd = 120;
+        description = "月付订阅成功赠送120积分";
+        console.log(`[webhook] 识别为月付计划，将添加 ${creditsToAdd} 积分`);
+      } else if (amount === 990) {
+        // 年付计划 ($9.90/month)
+        creditsToAdd = 1800;
+        description = "年付订阅成功赠送1800积分";
+        console.log(`[webhook] 识别为年付计划，将添加 ${creditsToAdd} 积分`);
+      } else {
+        console.log(`[webhook] 未识别的订阅金额 ${amount}，使用默认积分 ${creditsToAdd}`);
+      }
+
+      // 添加订阅积分
+      console.log(`[webhook] 开始调用 addBonusCredits 函数`);
+      const result = await addBonusCredits(
+        userId,
+        creditsToAdd,
+        description,
+        {
+          subscriptionId: subscription.id,
+          customerId,
+          productId,
+          priceId,
+          amount,
+          type: "subscription_bonus",
+          webhookEventType: event.type,
+          webhookEventId: event.id,
+          customerEmail: customer.email,
+        }
+      );
+
+      console.log(`[webhook] 订阅创建成功，为用户 ${userId} 添加了 ${creditsToAdd} 积分`, {
+        userId,
+        creditsAdded: creditsToAdd,
+        newBalance: result.balance,
+        subscriptionId: subscription.id,
+        transactionId: result.transactionId,
+        customerEmail: customer.email,
+      });
+      
+    } catch (error) {
+      console.error(`[webhook] 为订阅用户添加积分失败`, {
+        userId,
+        subscriptionId: subscription.id,
+        customerId,
+        customerEmail: customer.email,
+        error: error instanceof Error ? error.message : error,
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      
+      // 虽然积分添加失败，但不抛出错误，因为订阅本身已经成功创建
+      // 这样可以避免webhook重试导致重复处理
+      console.warn(`[webhook] 积分添加失败但不影响订阅创建，请手动处理用户 ${userId} 的积分`);
+    }
+  } else {
+    console.log(`[webhook] 跳过积分添加 - 事件类型: ${event.type}, 订阅状态: ${subscription.status}`);
+  }
 }
 
 async function handlePaymentIntentSucceeded(event: any) {

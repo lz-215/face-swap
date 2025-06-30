@@ -1,8 +1,33 @@
-'use client';
+"use client";
 
-import { CreditBalanceDisplay } from './credit-balance-display';
+import { CreditCard } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useSimpleCredits } from "~/hooks/use-simple-credits";
+import { cn } from "~/lib/utils";
 
-export function CreditBalance({ className }: { className?: string }) {
-  // 不再需要服务端获取初始余额，CreditBalanceDisplay 组件会通过实时订阅自动获取和更新
-  return <CreditBalanceDisplay className={className} />;
+interface CreditBalanceProps {
+  className?: string;
+}
+
+export function CreditBalance({ className }: CreditBalanceProps) {
+  const t = useTranslations("Navigation");
+  const { balance, isLoading } = useSimpleCredits();
+
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 px-3 py-2",
+        "dark:from-blue-950/50 dark:to-purple-950/50",
+        className
+      )}
+    >
+      <CreditCard className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        {t("credits")}:
+      </span>
+      <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
+        {isLoading ? "..." : balance}
+      </span>
+    </div>
+  );
 }

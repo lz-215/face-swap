@@ -50,15 +50,22 @@ export const supabaseAuth = {
     return supabaseClient.auth.signOut();
   },
 
-  // 使用邮箱和密码注册
-  signUpWithPassword: async (email: string, password: string, options?: { data?: { name?: string } }) => {
-    return supabaseClient.auth.signUp({
-      email,
-      options: {
-        data: options?.data,
-      },
-      password,
-    });
+  // 退出登录并重定向（新增方法）
+  signOutWithRedirect: async (redirectTo: string = "/auth/sign-in") => {
+    try {
+      const { error } = await supabaseClient.auth.signOut();
+      
+      if (error) {
+        console.error("Sign out error:", error.message);
+        throw error;
+      }
+      
+      // 使用 window.location 而不是 router 来确保完全刷新
+      window.location.href = redirectTo;
+    } catch (error) {
+      console.error("Unexpected sign out error:", error);
+      throw error;
+    }
   }
 };
 
@@ -69,17 +76,24 @@ export const useSupabaseSession = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     // 初始化时获取用户
     const getInitialSession = async () => {
       try {
         const {
           data: { user: currentUser },
-        } = await supabaseAuth.getSession();
-        setUser(currentUser || null);
+        } = await supabaseClient.auth.getUser();
+        if (mounted) {
+          setUser(currentUser || null);
+          setLoading(false);
+        }
       } catch (error) {
         console.error("Error getting user:", error);
-      } finally {
-        setLoading(false);
+        if (mounted) {
+          setUser(null);
+          setLoading(false);
+        }
       }
     };
 
@@ -89,19 +103,23 @@ export const useSupabaseSession = () => {
     // 监听认证状态变化
     const {
       data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-      // 当认证状态变化时，使用 getUser() 获取验证过的用户数据
-      if (session) {
-        const { data } = await supabaseClient.auth.getUser();
-        setUser(data.user);
+    } = supabaseClient.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state changed:', event, session);
+      
+      if (!mounted) return;
+
+      // 当认证状态变化时，直接使用session中的user
+      if (session?.user) {
+        setUser(session.user);
       } else {
         setUser(null);
       }
       setLoading(false);
     });
 
-    // 清理订, user
+    // 清理函数
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
   }, []);

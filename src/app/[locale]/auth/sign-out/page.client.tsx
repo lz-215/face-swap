@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import { useMounted } from "~/lib/hooks/use-mounted";
-import { createClient } from "~/lib/supabase/client";
+import { supabaseAuth } from "~/lib/supabase-auth-client";
 import { cn } from "~/lib/utils";
 import { Button, buttonVariants } from "~/ui/primitives/button";
 import { Skeleton } from "~/ui/primitives/skeleton";
@@ -11,14 +12,18 @@ import { Skeleton } from "~/ui/primitives/skeleton";
 export function SignOutPageClient() {
   const router = useRouter();
   const mounted = useMounted();
+  const t = useTranslations("Navigation");
 
   const handlePageBack = async () => {
     router.back();
   };
 
   const handleSignOut = async () => {
-    const supabase = await createClient()
-    await supabase.auth.signOut()
+    try {
+      await supabaseAuth.signOutWithRedirect();
+    } catch (error) {
+      console.error("Sign out error:", error);
+    }
   };
 
   return (
@@ -34,7 +39,7 @@ export function SignOutPageClient() {
       </Button>
       {mounted ? (
         <Button onClick={handleSignOut} size="default" variant="secondary">
-          Log out
+          {t("signOut")}
           <span className="sr-only">
             This action will log you out of your account.
           </span>
@@ -43,7 +48,7 @@ export function SignOutPageClient() {
         <Skeleton
           className={cn(
             buttonVariants({ size: "default", variant: "secondary" }),
-            "bg-muted text-muted-foreground",
+            "bg-muted text-muted-foreground"
           )}
         >
           Log out

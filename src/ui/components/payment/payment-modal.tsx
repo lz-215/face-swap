@@ -97,10 +97,10 @@ export function PaymentModal({
     theme: "stripe" as const,
     variables: {
       borderRadius: "4px",
-      colorBackground: "#ffffff",
+      colorBackground: "#f7f7ff",
       colorDanger: "#df1b41",
-      colorPrimary: "#0570de",
-      colorText: "#30313d",
+      colorPrimary: "#5a5aff",
+      colorText: "#1a1a1c",
       fontFamily: "Ideal Sans, system-ui, sans-serif",
       spacingUnit: "2px",
     },
@@ -128,19 +128,23 @@ export function PaymentModal({
           {loading && (
             <div className="flex items-center justify-center py-8">
               <div className="flex items-center gap-2">
-                <div className={`
+                <div
+                  className={`
                   h-4 w-4 animate-spin rounded-full border-2 border-current
                   border-t-transparent
-                `} />
+                `}
+                />
                 正在创建支付...
               </div>
             </div>
           )}
 
           {error && (
-            <div className={`
+            <div
+              className={`
               rounded-md bg-destructive/10 p-3 text-sm text-destructive
-            `}>
+            `}
+            >
               {error}
             </div>
           )}

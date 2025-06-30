@@ -12,15 +12,13 @@
     "signIn": "Sign in",
     "signInWithEmail": "Sign in with email",
     "signInWithGoogle": "Sign in with Google",
-    "signUp": "Sign up",
-    "signUpWithEmail": "Sign up with email",
-    "signUpWithGoogle": "Sign up with Google",
     "agreeToTerms": "By signing up you agree to our ",
     "and": " and ",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "subTitle": "Sign in or Create account to continue",
-    "emailPlaceholder": "your@email.com"
+    "emailPlaceholder": "your@email.com",
+    "redirecting": "Login successful, redirecting..."
   },
   "Common": {
     "cancel": "Cancel",
@@ -66,15 +64,15 @@
     "uploadImage": "Upload image"
   },
   "Home": {
-    "heroTitle": "See your photos in realistic colors",
+    "heroTitle": "Transform Your Photos with Realistic AI Face Swapping",
     "heroDesc1": "Effortlessly swap faces in photos and videos with AI-powered precision.",
-    "heroDesc2": "Upload your image and let VidMage's advanced face-swapping technology do the magic.",
-    "heroDesc3": "Get funny and realistic results online for free!",
-    "swapNow": "Swap Now",
+    "heroDesc2": "Upload your images and let our advanced face-swapping technology work its magic.",
+    "heroDesc3": "Get stunning and realistic results online for free!",
+    "swapNow": "Try Face Swap Now",
     "before": "Before",
     "after": "After",
-    "finalVideoTitle": "Try AI Face Swap Now",
-    "finalVideoDesc": "Unleash your creativity—swap faces in photos and videos easily with VidMage. Start for free and bring your ideas to life!",
+    "finalVideoTitle": "Experience AI Face Swap Today",
+    "finalVideoDesc": "Unleash your creativity—swap faces in photos and videos effortlessly. Start for free and bring your ideas to life!",
     "getStartNow": "Get Started Now",
     "getPremium": "Get Premium"
   },
@@ -152,11 +150,11 @@
     "reward": "Reward",
     "creditsDescription": "Credits are used to colorize your photos. Recharge your credits to continue using our services.",
     "tryAgain": "Try Again",
-    "monthlyPlanDesc": "$16.9/month, process up to 120 images or equivalent video duration, no watermark, max video size 500MB, priority processing, email support, credits renew monthly.",
-    "yearlyPlanDesc": "$9.9/month (total $118.8/year), process up to 1800 images or equivalent video duration, no watermark, max video size 500MB, priority processing, email support, credits renew yearly.",
-    "pricingFeatures": "Face swap for 120 images; No watermark; Priority processing; Email support.",
-    "pricingFeaturesMonthly": "Face swap for 120 images; No watermark; Priority processing; Email support.",
-    "tryNow": "Try now",
+    "monthlyPlanDesc": "$16.9/month, process up to 120 images with equivalent video duration, no watermark, max video size 500MB, priority processing, email support, credits renew monthly.",
+    "yearlyPlanDesc": "$9.9/month (total $118.8/year), process up to 1800 images with equivalent video duration, no watermark, max video size 500MB, priority processing, email support, credits renew yearly.",
+    "pricingFeatures": "Face swap for 120 images; No watermark; Priority processing; Email support",
+    "pricingFeaturesMonthly": "Face swap for 120 images; No watermark; Priority processing; Email support",
+    "tryNow": "Try Now",
     "monthlyPlanFeatures": [
       "Face swap for 120 images",
       "No watermark",
@@ -164,8 +162,8 @@
       "Email support"
     ],
     "yearlyPlanFeatures": [
-      "Face swap for 1800 images/year",
-      "No watermark",
+      "Face swap for 1800 images per year",
+      "No watermark", 
       "Priority processing",
       "Email support"
     ]
@@ -206,17 +204,16 @@
     "loading": "Loading"
   },
   "nav": {
-    "login": "Log in",
-    "signup": "Sign up"
+    "login": "Log in"
   },
   "AISwapFaceCases": {
     "swapNow": "Swap Now",
-    "mainTitle": "Unleash Creativity with VidMage AI Face Swap",
-    "mainDesc": "VidMage offers a seamless and free face-swapping experience for videos and photos. Whether for fun, memes, or business, transform your creations in just a few clicks with unmatched precision and realism.",
+    "mainTitle": "Unleash Creativity with Swapify.AI Face Swap",
+    "mainDesc": "Swapify.AI offers a seamless and free face-swapping experience for videos and photos. Whether for fun, memes, or business, transform your creations in just a few clicks with unmatched precision and realism.",
     "paintingTitle": "Face Swap on Painting",
     "paintingDesc": "Have you ever imagined yourself as the Mona Lisa or a figure in The Last Supper? With Face Swap on Painting, you can turn timeless masterpieces into personalized works of art. Upload your photo and see your face seamlessly integrated into iconic paintings like The Starry Night or Girl with a Pearl Earring. It isn't just fun—it's also a unique way to connect with art history.",
     "genderTitle": "Swap Gender with Anyone for Fun",
-    "genderDesc": "Have fun experimenting with gender swaps using VidMage's AI-powered tool! Prank your friends by swapping their gender in photos or transform your family members to see how they'd look as the opposite gender.",
+    "genderDesc": "Have fun experimenting with gender swaps using Swapify.AI's AI-powered tool! Prank your friends by swapping their gender in photos or transform your family members to see how they'd look as the opposite gender.",
     "timeTitle": "Time and Space Travel",
     "timeDesc": "What would it be like to swap faces with a historical figure or someone from another culture? With our Time and Space Travel feature, you can find out! Imagine seeing your face as Cleopatra, Albert Einstein, or even a medieval knight.",
     "makeupTitle": "Visual Makeup Experiments",
@@ -229,107 +226,135 @@
     "alt": "Template {index}"
   },
   "HowToSwap": {
-    "title": "How to Swap Faces Online with VidMage",
-    "desc": "Quickly swap faces in photos using VidMage's advanced AI tool. Follow these simple steps to create unique and entertaining face swaps in just minutes.",
+    "title": "How to Swap Faces Online with Swapify.AI",
+    "desc": "Quickly swap faces in photos using Swapify.AI's advanced AI tool. Follow these simple steps to create unique and entertaining face swaps in just minutes.",
     "step1Title": "Step 1: Upload Original Image",
     "step1Desc": "Start by uploading the photo you want to swap faces with. This will be your base image. Our tool will ensure that areas outside the face remain untouched for a seamless result.",
     "step2Title": "Step 2: Add Face Image",
     "step2Desc": "Upload the face image you want to use for the swap. This could be a photo of yourself, a friend, or even a favorite character. Make sure the image is clear for the best outcome.",
     "step3Title": "Step 3: Swap Faces",
-    "step3Desc": "Click the Face Swap button and let VidMage's AI work its magic. Within seconds, your swapped image will be ready with natural and realistic results."
+    "step3Desc": "Click the Face Swap button and let Swapify.AI's AI work its magic. Within seconds, your swapped image will be ready with natural and realistic results."
   },
   "Testimonials": {
-    "userTestimonialsTitle": "What Users Are Saying About VidMage",
+    "userTestimonialsTitle": "What Users Are Saying About Swapify.AI",
     "testimonial1Title": "Perfect for my marketing campaigns!",
-    "testimonial1Content": "VidMage has become my go-to tool for creating eye-catching marketing content. The outcomes are always impressive and professional-looking, making our campaigns unique. It's also super easy to use, even for someone with no design background.",
+    "testimonial1Content": "Swapify.AI has become my go-to tool for creating eye-catching marketing content. The outcomes are always impressive and professional-looking, making our campaigns unique. It's also super easy to use, even for someone with no design background.",
     "testimonial1Author": "Michael Brown - Marketing Manager",
     "testimonial2Title": "The best face swap tool I've ever used!",
-    "testimonial2Content": "I've tried several face swap apps before, but VidMage stands out. The interface is so easy to navigate, and the swaps are so smooth and natural. My friends couldn't stop laughing at the hilarious results I created. Highly recommend!",
+    "testimonial2Content": "I've tried several face swap apps before, but Swapify.AI stands out. The interface is so easy to navigate, and the swaps are so smooth and natural. My friends couldn't stop laughing at the hilarious results I created. Highly recommend!",
     "testimonial2Author": "Emily Taylor - Social Media Enthusiast",
     "testimonial3Title": "Unbelievably Realistic!",
     "testimonial3Content": "I was amazed at how natural the face swaps looked! The AI blends everything perfectly, and the results are seamless. I swapped my face into a classic painting, and it looked like I actually belonged there. Definitely the best face swap tool I've tried!",
     "testimonial3Author": "Jessica Lawson"
   },
   "FAQ": {
-    "faqsTitle": "FAQs of AI Face Swap",
+    "faqsTitle": "AI Face Swap FAQs",
     "faq1q": "What is AI Face Swap?",
-    "faq1a": "AI Face Swap is a technology powered by artificial intelligence (AI) that replaces a person's face in an image or video with another person's face. The technology works by analyzing facial features, expressions, and lighting conditions to create smooth and natural-looking results.",
-    "faq2q": "How does AI Face Swap work?",
-    "faq2a": "AI Face Swap uses advanced deep learning algorithms, such as Generative Adversarial Networks (GANs), to replace one person's face with another in an image or video. By analyzing and mapping key facial features like eyes, nose, and mouth, the AI creates a seamless blend that adjusts for lighting, skin tone, and facial expressions, ensuring the swapped face integrates naturally.",
-    "faq3q": "Is AI Face Swap safe?",
-    "faq3a": "Yes, your privacy is a priority. Uploaded photos and generated results are deleted within 24-48 hours, and no personal data is collected during the process.",
-    "faq4q": "Can I swap faces on my mobile device?",
-    "faq4a": "Yes, VidMage is fully compatible with mobile browsers like Safari and Chrome, allowing you to swap faces on iPhones and Android devices.",
-    "faq5q": "Does AI Face Swap support gender swapping?",
-    "faq5a": "Yes, you can use VidMage to transform male faces to female or vice versa. This is perfect for fun experiments or creative content."
+    "faq1a": "AI Face Swap is a technology that uses artificial intelligence to replace a face in a photo or video with another face.",
+    "faq2q": "How to use the face swap tool?",
+    "faq2a": "Simply upload an original image and a face image, then click the 'Swap Face' button to get the result.",
+    "faq3q": "Is it free to use?",
+    "faq3a": "Yes, we offer a free trial for you to experience the power of AI face swapping.",
+    "faq4q": "What file formats are supported?",
+    "faq4a": "We support various image formats such as JPG, PNG, and more.",
+    "faq5q": "Is my data safe?",
+    "faq5a": "We prioritize your privacy. All uploaded images are processed securely and are not stored or used for any other purpose."
   },
   "Navbar": {
     "home": "Home",
     "faceSwap": "Face Swap",
     "pricing": "Pricing",
-    "login": "Log in",
-    "signup": "Sign up",
+    "login": "Sign In",
     "userCenter": "User Center",
     "dashboard": "Dashboard",
-    "stats": "History",
+    "stats": "Statistics",
     "profile": "Profile",
     "settings": "Settings",
-    "logout": "Logout",
+    "logout": "Sign Out",
     "history": "History",
-    "noData": "No history found."
+    "noData": "No history available"
   },
-
   "FaceSwap": {
-  "mainTitle": "AI Face Swap",
-  "mainDesc": "Upload a photo and experience AI face swapping easily.",
-  "tabPhoto": "Photo Swap",
-  "tabVideo": "Video Swap",
-  "tabMultiple": "Batch Swap",
-  "step1Title": "Step 1: Upload Original Image",
-  "step2Title": "Step 2: Upload Target Image",
-  "step3Title": "Step 3: Start Swapping",
-  "changeImage": "Change Image",
-  "uploadFormats": "Supported formats: PNG/JPG/JPEG/WEBP",
-  "pleaseUpload": "Please upload an image",
-  "swapBtn": "Start Swapping",
-  "swapping": "Swapping, please wait...",
-  "zoomIn": "Zoom In",
-  "unlockAllFeatures": "Unlock all features",
-  "featureCredits": "Credits consumption",
-  "featureVideo": "Supports video face swap",
-  "featureImage": "Image face swap supported",
-  "featureNoWatermark": "No watermark",
-  "featurePriority": "Priority processing",
-  "feature120Images": "120 images",
-  "upgradeNow": "Upgrade Now",
-  "featureBatch": "Batch processing",
-  "featureMac": "Supports Mac",
-  "download": "Download Image",
-  "templateTitle": "Choose Template",
-  "templateDesc": "Click a template image to quickly try face swap.",
-  "resultTitle": "Swap Result",
-  "resultDesc": "Drag the divider to compare before and after.",
-  "errorNoOrigin": "Please upload the original image first",
-  "errorNoFace": "Please upload the target face image",
-  "errorSwapFailed": "Face swap failed, please try again",
-  "errorSwapError": "Face swap error, please try again later",
-  "before": "Before",
-  "after": "After"
+    "mainTitle": "AI Face Swap",
+    "mainDesc": "Upload photos and experience seamless AI-powered face swapping.",
+    "tabPhoto": "Photo Swap",
+    "tabVideo": "Video Swap",
+    "tabMultiple": "Batch Swap",
+    "step1Title": "Step 1: Upload Original Image",
+    "step2Title": "Step 2: Upload Face Image",
+    "step3Title": "Step 3: Start Face Swap",
+    "changeImage": "Change Image",
+    "uploadFormats": "Supported formats: PNG/JPG/JPEG/WEBP",
+    "pleaseUpload": "Please upload an image",
+    "uploadImage": "Upload Image",
+    "swapBtn": "Start Face Swap",
+    "swapping": "Processing face swap, please wait...",
+    "zoomIn": "Zoom In",
+    "unlockAllFeatures": "Unlock All Features",
+    "featureCredits": "Credit consumption",
+    "featureVideo": "Video face swap support",
+    "featureImage": "Photo face swap support",
+    "featureNoWatermark": "No watermark",
+    "featurePriority": "Priority processing",
+    "feature120Images": "120 images per month",
+    "upgradeNow": "Upgrade Now",
+    "featureBatch": "Batch processing",
+    "featureMac": "Mac compatible",
+    "download": "Download Image",
+    "templateTitle": "Choose a Template",
+    "templateDesc": "Click on a template image to quickly try face swapping.",
+    "resultTitle": "Face Swap Result",
+    "resultDesc": "Drag the slider to compare before and after results.",
+    "errorNoOrigin": "Please upload the original image first",
+    "errorNoFace": "Please upload a face image",
+    "errorSwapFailed": "Face swap failed, please try again",
+    "errorSwapError": "Face swap error, please try again later",
+    "before": "Before",
+    "after": "After",
+    "info": {
+      "validatingFile": "Validating file...",
+      "checkingAuth": "Checking authentication..."
+    },
+    "success": {
+      "imageUploaded": "Image uploaded successfully!",
+      "faceSwapComplete": "Face swap completed successfully!"
+    },
+    "error": {
+      "missingImages": "Please upload both images before swapping.",
+      "noCreditsLeft": "No credits left, please recharge!",
+      "validationFailed": "File validation failed. Please try again.",
+      "faceSwapFailed": "Face swap failed. Please try again."
+    },
+    "warning": {
+      "creditConsumptionFailed": "Face swap completed, but failed to update credits."
+    },
+    "loginPrompt": {
+      "title": "Login Required for Face Swap",
+      "description": "Sign in to enjoy AI face swapping services, save your history, and manage your creations.",
+      "benefits": [
+        "Unlimited AI face swapping",
+        "Save and manage swap history",
+        "High-quality watermark-free results",
+        "Priority processing speed"
+      ],
+      "loginButton": "Sign In Now",
+      "cancelButton": "Maybe Later"
+    }
   },
   "FaceSwapTypes": {
-  "title": "Revolutionary Photo Face Swap Tool for Every Occasion",
-  "desc": "Bring your photos to life with seamless face swapping. Whether for fun, creativity, or special projects, VidMage lets you easily replace faces in any photo. Upload your image, swap faces effortlessly, and enjoy realistic, high-quality results in seconds. Perfect for creating memorable edits or sharing laughs with friends!",
-  "card1Title": "Festive Costume Dress-Up",
-  "card1Desc": "Get into the holiday spirit with our Festive Costume Dress-Up feature! Easily transform yourself into Santa, a spooky ghost, or the Easter Bunny. You can even face-swap with friends for fun group photos. Perfect for personalized holiday cards, social media posts, or just spreading cheer. Simply upload your photo, pick a costume, and enjoy! It's a quick, easy, and fun way to make unforgettable holiday memories.",
-  "card2Title": "Meme Face Swap",
-  "card2Desc": "Ever wanted to put your face on the Distracted Boyfriend meme or your friend's face on Grumpy Cat? Now you can! Our tool lets you easily create hilarious, personalized memes. Just upload your image, pick a meme template, and watch the magic happen. It's perfect for private jokes or aiming for viral success, making quick, funny, and unforgettable content for social media.",
-  "card3Title": "Anime Face Swap",
-  "card3Desc": "Swap faces between characters like Naruto and Sasuke or give Pikachu a unique twist. Perfect for anime fans and content creators!",
-  "swapNow": "Swap Now"
-},
+    "title": "Revolutionary Photo Face Swap Tool for Every Occasion",
+    "desc": "Bring your photos to life with seamless face swapping. Whether for fun, creativity, or special projects, Swapify.AI lets you easily replace faces in any photo. Upload your image, swap faces effortlessly, and enjoy realistic, high-quality results in seconds. Perfect for creating memorable edits or sharing laughs with friends!",
+    "card1Title": "Festive Costume Dress-Up",
+    "card1Desc": "Get into the holiday spirit with our Festive Costume Dress-Up feature! Easily transform yourself into Santa, a spooky ghost, or the Easter Bunny. You can even face-swap with friends for fun group photos. Perfect for personalized holiday cards, social media posts, or just spreading cheer. Simply upload your photo, pick a costume, and enjoy! It's a quick, easy, and fun way to make unforgettable holiday memories.",
+    "card2Title": "Meme Face Swap",
+    "card2Desc": "Ever wanted to put your face on the Distracted Boyfriend meme or your friend's face on Grumpy Cat? Now you can! Our tool lets you easily create hilarious, personalized memes. Just upload your image, pick a meme template, and watch the magic happen. It's perfect for private jokes or aiming for viral success, making quick, funny, and unforgettable content for social media.",
+    "card3Title": "Anime Face Swap",
+    "card3Desc": "Swap faces between characters like Naruto and Sasuke or give Pikachu a unique twist. Perfect for anime fans and content creators!",
+    "swapNow": "Swap Now"
+  },
   "PricingPage": {
     "choosePlan": "Choose Your Plan",
-    "subtitle": "High-quality, fast face swapping with no limits. Cancel anytime."
+    "subtitle": "High-quality, lightning-fast face swapping with unlimited possibilities. Cancel anytime."
   },
   "profile": {
     "remainingImages": "Remaining Images",
@@ -381,33 +406,60 @@
     "contactTitle": "Contact Us",
     "contact": "If you have any questions about these Terms, please contact us at support@example.com."
   },
-  "history": {
-    "_": "History",
-    "noData": "No history found.",
-    "preview": "Preview",
-    "type": "Type",
-    "uploadedAt": "Uploaded At",
-    "credits": "Credits"
+  "SignIn": {
+    "signInTitle": "Sign In",
+    "signInSubtitle": "Sign in with your third-party account",
+    "githubButton": "Sign in with GitHub",
+    "googleButton": "Sign in with Google",
+    "githubLoginError": "GitHub sign in failed",
+    "googleLoginError": "Google sign in failed",
+    "thirdPartyLoginError": "Third-party sign in error",
+    "termsText": "By signing in you agree to our",
+    "termsLink": "Terms of Service",
+    "andText": "and",
+    "privacyLink": "Privacy Policy"
   },
   "Command": {
     "title": "Command Menu"
   },
-  "SignUpPage": {
-    "pageTitle": "Create an account",
-    "pageDescription": "Enter your details to create your account.",
-    "nameLabel": "Name",
-    "namePlaceholder": "John Doe",
-    "emailLabel": "Email",
-    "emailPlaceholder": "name@example.com",
-    "passwordLabel": "Password",
-    "emailInUseError": "This email is already in use. Please try another one.",
-    "signUpError": "Sign up failed. Please try again later.",
-    "githubSignUpError": "GitHub sign up failed.",
-    "googleSignUpError": "Google sign up failed.",
-    "createAccountButton": "Create account",
-    "creatingAccountButton": "Creating account...",
-    "orContinueWith": "Or continue with",
-    "haveAccount": "Already have an account?",
-    "signIn": "Sign in"
+  "History": {
+    "title": "History",
+    "loading": "Loading history...",
+    "noHistory": "No history found.",
+    "status": "Status",
+    "createdAt": "Created At",
+    "auth": {
+      "title": "Login Required",
+      "description": "Please log in to view your face swap history.",
+      "loginButton": "Login"
+    }
+  },
+  "Dashboard": {
+    "loading": "Loading your dashboard...",
+    "welcomeBack": "Welcome Back!",
+    "active": "Active",
+    "currentCredits": "Current Credits",
+    "totalRecharged": "Total Recharged",
+    "totalUsed": "Total Used",
+    "available": "Available",
+    "empty": "Empty",
+    "total": "Total",
+    "used": "Used",
+    "accountId": "Account ID",
+    "accountIdDesc": "Your unique identifier",
+    "quickStats": "Quick Stats",
+    "quickStatsDesc": "Your usage overview",
+    "efficiencyRate": "Efficiency Rate",
+    "remaining": "Remaining",
+    "credits": "credits",
+    "copy": "Copy",
+    "copied": "Copied",
+    "newFaceSwap": "New Face Swap",
+    "needCreditsToSwap": "Need Credits to Swap",
+    "buyMoreCredits": "Buy More Credits",
+    "creditsDepleted": "Credits Depleted",
+    "creditsDepletedDesc": "You've used all your credits! Purchase more to continue using face swap features.",
+    "rechargeNow": "Recharge Now",
+    "failedToLoad": "Failed to load"
   }
-}   
+} 
