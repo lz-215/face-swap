@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
     // 获取详细的订阅和客户信息
     const subscriptionsWithDetails = await Promise.all(
-      pendingSubscriptions.map(async (sub) => {
+      pendingSubscriptions.map(async (sub: any) => {
         try {
           // 获取Stripe订阅详情
           const stripeSubscription = await stripe.subscriptions.retrieve(sub.subscriptionId);
@@ -36,13 +36,13 @@ export async function GET(request: NextRequest) {
             stripeSubscription: {
               id: stripeSubscription.id,
               status: stripeSubscription.status,
-              current_period_start: stripeSubscription.current_period_start,
-              current_period_end: stripeSubscription.current_period_end,
+              current_period_start: (stripeSubscription as any).current_period_start,
+              current_period_end: (stripeSubscription as any).current_period_end,
               items: stripeSubscription.items.data.map(item => ({
                 id: item.id,
                 price: {
                   id: item.price.id,
-                  unit_amount: item.price.unit_amount,
+                  unit_amount: (item.price as any).unit_amount,
                   currency: item.price.currency,
                 },
               })),
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error("[admin] 查询待处理订阅失败:", error);
+    console.error("[admin] 查询待处理订阅失败", error);
     
     return NextResponse.json(
       {
@@ -89,7 +89,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { action, subscriptionId, userId, customerId } = await request.json();
+    const { action, subscriptionId, userId, customerId } = await request.json() as {
+      action: string;
+      subscriptionId: string;
+      userId: string;
+      customerId: string;
+    };
 
     if (action === "link-subscription") {
       // 手动关联订阅到用户
@@ -156,7 +161,7 @@ export async function POST(request: NextRequest) {
       if (stripeSubscription.status === "active") {
         try {
           // 计算应该给的积分
-          const amount = stripeSubscription.items.data[0]?.price?.unit_amount;
+          const amount = (stripeSubscription.items.data[0]?.price as any)?.unit_amount;
           let creditsToAdd = 120; // 默认月付积分
           let description = "补发订阅积分";
 

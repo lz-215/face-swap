@@ -28,10 +28,10 @@ export const getCurrentSupabaseUserOrRedirect = async (
       redirect(forbiddenUrl);
     }
     // 如果忽略了禁止，立即返回 null 用户
-    return user; // 此时 user 为 null
+    return user; // 此时 user 是 null
   }
 
-  // 如果找到用户并提供了 okUrl，则重定向到该 URL
+  // 如果找到用户并提供了 okUrl，则重定向到该URL
   if (okUrl) {
     redirect(okUrl);
   }

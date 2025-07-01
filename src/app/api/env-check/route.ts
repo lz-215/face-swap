@@ -33,9 +33,9 @@ export async function GET() {
     }
 
     if (!envStatus.facepp.hasFaceAPI) {
-      recommendations.push("❌ 需要配置Face++API密钥 (FACEPP_API_KEY 和 FACEPP_API_SECRET)");
+      recommendations.push("❌ 需要配置AI服务API密钥 (FACEPP_API_KEY 和 FACEPP_API_SECRET)");
     } else {
-      recommendations.push("✅ Face++API已配置");
+      recommendations.push("✅ AI服务API已配置");
     }
 
     if (envStatus.supabase.NEXT_PUBLIC_SUPABASE_URL) {

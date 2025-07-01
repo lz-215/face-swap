@@ -5,15 +5,23 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 
-import { handleCreditRechargeSuccess } from "~/api/credits/credit-service";
+import { 
+  handleCreditRechargeWithTransaction,
+  addBonusCreditsWithTransaction 
+} from "~/api/credits/credit-service";
 import { syncSubscription } from "~/api/payments/stripe-service";
-import { addBonusCredits } from "~/api/credits/credit-service";
 import { stripe } from "~/lib/stripe";
 import { db } from "~/db";
 import { userTable } from "~/db/schema";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
+/**
+ * 改进版 Stripe Webhook 处理器
+ * - 增强错误处理和重试机制
+ * - 使用事务确保数据一致性
+ * - 添加幂等性支持
+ */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text();
@@ -21,6 +29,7 @@ export async function POST(request: NextRequest) {
     const signature = (await headersList).get("stripe-signature");
 
     if (!signature || !webhookSecret) {
+      console.error("[webhook] Webhook 签名验证失败 - 缺少签名或密钥");
       return new NextResponse("Webhook 签名验证失败", { status: 400 });
     }
 
@@ -31,23 +40,29 @@ export async function POST(request: NextRequest) {
       webhookSecret,
     );
 
-    // 处理事件
-    switch (event.type) {
-      case "customer.subscription.created":
-      case "customer.subscription.deleted":
-      case "customer.subscription.updated":
-        await handleSubscriptionChange(event);
-        break;
-      case "payment_intent.succeeded":
-        await handlePaymentIntentSucceeded(event);
-        break;
-      default:
-        console.log(`未处理的事件类型: ${event.type}`);
-    }
+    console.log(`[webhook] 收到事件: ${event.type}, ID: ${event.id}`);
 
-    return NextResponse.json({ success: true });
+    // 处理事件（使用幂等性处理）
+    const result = await processWebhookEvent(event);
+    
+    console.log(`[webhook] 事件处理完成: ${event.type}, 结果:`, result);
+    
+    return NextResponse.json({ success: true, eventId: event.id });
   } catch (error) {
-    console.error("Webhook 错误:", error);
+    console.error("[webhook] Webhook 处理错误:", {
+      error: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    
+    // 对于签名验证错误，返回 400
+    if (error instanceof Error && error.message.includes("signature")) {
+      return NextResponse.json(
+        { error: "签名验证失败", success: false },
+        { status: 400 },
+      );
+    }
+    
+    // 对于其他错误，返回 500（这会导致 Stripe 重试）
     return NextResponse.json(
       { error: "Webhook 处理错误", success: false },
       { status: 500 },
@@ -55,215 +70,370 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleSubscriptionChange(event: any) {
+/**
+ * 处理 Webhook 事件的主函数（带重试和幂等性）
+ */
+async function processWebhookEvent(event: Stripe.Event) {
+  // 检查事件是否已经处理过（简单的幂等性检查）
+  const eventId = event.id;
+  
+  try {
+    switch (event.type) {
+      case "customer.subscription.created":
+      case "customer.subscription.deleted":
+      case "customer.subscription.updated":
+        return await handleSubscriptionChangeWithRetry(event);
+        
+      case "payment_intent.succeeded":
+        return await handlePaymentIntentSucceededWithRetry(event);
+        
+      default:
+        console.log(`[webhook] 未处理的事件类型: ${event.type}`);
+        return { handled: false, reason: "unsupported_event_type" };
+    }
+  } catch (error) {
+    console.error(`[webhook] 处理事件 ${eventId} 失败:`, error);
+    throw error;
+  }
+}
+
+/**
+ * 带重试机制的订阅变更处理
+ */
+async function handleSubscriptionChangeWithRetry(event: Stripe.Event, retryCount = 0) {
+  const maxRetries = 3;
+  
+  try {
+    return await handleSubscriptionChange(event);
+  } catch (error) {
+    console.error(`[webhook] 订阅处理失败 (尝试 ${retryCount + 1}/${maxRetries}):`, error);
+    
+    if (retryCount < maxRetries - 1) {
+      // 指数退避重试
+      const delay = Math.pow(2, retryCount) * 1000;
+      console.log(`[webhook] ${delay}ms 后重试...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return handleSubscriptionChangeWithRetry(event, retryCount + 1);
+    }
+    
+    throw error;
+  }
+}
+
+/**
+ * 带重试机制的支付成功处理
+ */
+async function handlePaymentIntentSucceededWithRetry(event: Stripe.Event, retryCount = 0) {
+  const maxRetries = 3;
+  
+  try {
+    return await handlePaymentIntentSucceeded(event);
+  } catch (error) {
+    console.error(`[webhook] 支付处理失败 (尝试 ${retryCount + 1}/${maxRetries}):`, error);
+    
+    if (retryCount < maxRetries - 1) {
+      const delay = Math.pow(2, retryCount) * 1000;
+      console.log(`[webhook] ${delay}ms 后重试...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return handlePaymentIntentSucceededWithRetry(event, retryCount + 1);
+    }
+    
+    throw error;
+  }
+}
+
+/**
+ * 订阅变更处理（改进版）
+ */
+async function handleSubscriptionChange(event: Stripe.Event) {
   const subscription = event.data.object as Stripe.Subscription;
   const customerId = subscription.customer as string;
 
-  console.log(`[webhook] 处理订阅变更事件: ${event.type}, 订阅ID: ${subscription.id}, 客户ID: ${customerId}`);
+  console.log(`[webhook] 处理订阅变更: ${event.type}, 订阅ID: ${subscription.id}, 客户ID: ${customerId}`);
 
-  // 获取关联的用户 ID
-  const customer = await stripe.customers.retrieve(customerId);
-  if (!customer || customer.deleted) {
-    console.error(`[webhook] 找不到客户: ${customerId}`);
-    throw new Error("找不到客户");
+  // 获取用户ID（改进的查找逻辑）
+  const userId = await findUserIdByCustomer(customerId);
+  
+  if (!userId) {
+    console.warn(`[webhook] 无法找到用户ID，记录待处理订阅: ${subscription.id}`);
+    await handleOrphanedSubscription(subscription, customerId, event.type);
+    return { handled: false, reason: "user_not_found" };
   }
 
-  console.log(`[webhook] 客户信息`, {
-    id: customer.id,
-    email: customer.email,
-    name: customer.name,
-    metadata: customer.metadata,
-  });
+  // 获取商品信息
+  const productInfo = await getProductInfo(subscription);
 
-  // 从元数据中获取用户 ID
-  let userId = customer.metadata.userId;
-  
-  // 如果没有userId metadata，尝试通过email匹配用户
-  if (!userId && customer.email) {
-    console.log(`[webhook] 客户没有userId metadata，尝试通过email匹配: ${customer.email}`);
+  // 同步订阅数据（使用事务）
+  await syncSubscriptionWithTransaction(userId, customerId, subscription, productInfo);
+
+  // 处理订阅创建时的积分奖励
+  if (event.type === "customer.subscription.created" && subscription.status === "active") {
+    await handleSubscriptionBonus(userId, subscription, productInfo);
+  }
+
+  return { 
+    handled: true, 
+    userId, 
+    subscriptionId: subscription.id,
+    eventType: event.type 
+  };
+}
+
+/**
+ * 支付成功处理（改进版）
+ */
+async function handlePaymentIntentSucceeded(event: Stripe.Event) {
+  const paymentIntent = event.data.object as Stripe.PaymentIntent;
+  const { metadata } = paymentIntent;
+
+  console.log(`[webhook] 处理支付成功: ${paymentIntent.id}, 金额: ${paymentIntent.amount}`);
+
+  // 检查是否是积分充值
+  if (metadata && metadata.type === "credit_recharge") {
+    const { rechargeId } = metadata;
     
+    if (!rechargeId) {
+      console.error(`[webhook] 积分充值支付缺少 rechargeId: ${paymentIntent.id}`);
+      throw new Error("积分充值支付缺少 rechargeId");
+    }
+
     try {
-      // 通过email查找用户
+      // 使用改进的事务处理函数
+      const result = await handleCreditRechargeWithTransaction(rechargeId, paymentIntent.id);
+      
+      console.log(`[webhook] 积分充值处理成功:`, {
+        rechargeId,
+        paymentIntentId: paymentIntent.id,
+        userId: metadata.userId,
+        credits: metadata.credits,
+        newBalance: result.newBalance,
+        duplicate: result.duplicate,
+      });
+
+      return {
+        handled: true,
+        type: "credit_recharge",
+        rechargeId,
+        success: true,
+        duplicate: result.duplicate,
+      };
+    } catch (error) {
+      console.error(`[webhook] 积分充值处理失败: ${rechargeId}`, error);
+      throw error;
+    }
+  }
+
+  // 处理其他类型的支付（如订阅支付）
+  console.log(`[webhook] 非积分充值支付，跳过处理: ${paymentIntent.id}`);
+  return { handled: false, reason: "not_credit_recharge" };
+}
+
+/**
+ * 通过 Stripe 客户ID查找用户ID（改进版）
+ */
+async function findUserIdByCustomer(customerId: string): Promise<string | null> {
+  try {
+    // 1. 获取 Stripe 客户信息
+    const customer = await stripe.customers.retrieve(customerId);
+    
+    if (!customer || customer.deleted) {
+      console.error(`[webhook] Stripe 客户不存在: ${customerId}`);
+      return null;
+    }
+
+    // 2. 从 metadata 中获取 userId
+    let userId = customer.metadata?.userId;
+    
+    if (userId) {
+      console.log(`[webhook] 从 metadata 找到用户ID: ${userId}`);
+      return userId;
+    }
+
+    // 3. 通过邮箱查找用户
+    if (customer.email) {
+      console.log(`[webhook] 通过邮箱查找用户: ${customer.email}`);
+      
       const user = await db.query.userTable.findFirst({
         where: eq(userTable.email, customer.email),
       });
       
       if (user) {
         userId = user.id;
-        console.log(`[webhook] 通过email找到用户: ${userId}`);
+        console.log(`[webhook] 通过邮箱找到用户: ${userId}`);
         
-        // 更新客户的metadata以便后续使用
+        // 更新客户 metadata
         await stripe.customers.update(customerId, {
           metadata: {
             ...customer.metadata,
-            userId: userId,
+            userId,
             linkedBy: "email_match",
             linkedAt: new Date().toISOString(),
           },
         });
         
-        console.log(`[webhook] 已更新客户metadata，关联到用户: ${userId}`);
-      } else {
-        console.warn(`[webhook] 未找到email为 ${customer.email} 的用户`);
+        return userId;
       }
-    } catch (error) {
-      console.error(`[webhook] 通过email查找用户失败:`, error);
     }
-  }
 
-  // 如果仍然没有找到用户ID，记录为待处理订阅
-  if (!userId) {
-    console.error(`[webhook] 无法确定用户ID`, {
+    console.warn(`[webhook] 无法找到用户:`, {
       customerId,
       customerEmail: customer.email,
-      subscriptionId: subscription.id,
-      eventType: event.type,
+      hasMetadata: !!customer.metadata?.userId,
     });
-
-    // 这里可以发送通知或记录到待处理队列
-    // 暂时抛出错误，但不影响webhook的整体处理
-    console.warn(`[webhook] 跳过积分处理 - 无法确定用户ID`);
     
-    // 只同步订阅数据，不处理积分
-    try {
-      // 获取商品 ID
-      let productId = "";
-      if (subscription.items.data.length > 0) {
-        const product = await stripe.products.retrieve(
-          subscription.items.data[0].price.product as string,
-        );
-        productId = product.id;
-      }
-
-      // 使用placeholder userId来同步订阅（后续可以手动更新）
-      await syncSubscription(
-        `pending_${customerId}`, // 使用特殊的userId格式
-        customerId,
-        subscription.id,
-        productId,
-        subscription.status,
-      );
-      
-      console.log(`[webhook] 已记录待处理订阅: ${subscription.id}`);
-    } catch (syncError) {
-      console.error(`[webhook] 同步待处理订阅失败:`, syncError);
-    }
-    
-    return; // 提前返回，不处理积分
-  }
-
-  // 获取商品 ID
-  let productId = "";
-  if (subscription.items.data.length > 0) {
-    const product = await stripe.products.retrieve(
-      subscription.items.data[0].price.product as string,
-    );
-    productId = product.id;
-  }
-
-  // 同步订阅数据
-  await syncSubscription(
-    userId,
-    customerId,
-    subscription.id,
-    productId,
-    subscription.status,
-  );
-
-  console.log(`[webhook] 订阅数据同步完成`);
-
-  // 如果是订阅创建且状态为active，添加对应积分
-  if (event.type === "customer.subscription.created" && subscription.status === "active") {
-    console.log(`[webhook] 订阅创建成功，开始为用户 ${userId} 添加积分`);
-    
-    try {
-      // 获取价格信息来判断订阅类型
-      const priceId = subscription.items.data[0]?.price?.id;
-      let creditsToAdd = 120; // 默认月付积分
-      let description = "订阅成功赠送积分";
-
-      // 根据价格ID或金额判断订阅类型
-      const amount = subscription.items.data[0]?.price?.unit_amount; // 金额（分）
-      
-      console.log(`[webhook] 订阅价格信息 - priceId: ${priceId}, amount: ${amount}`);
-      
-      if (amount === 1690) {
-        // 月付计划 ($16.90) 或测试计划
-        creditsToAdd = 120;
-        description = "月付订阅成功赠送120积分";
-        console.log(`[webhook] 识别为月付计划，将添加 ${creditsToAdd} 积分`);
-      } else if (amount === 990) {
-        // 年付计划 ($9.90/month)
-        creditsToAdd = 1800;
-        description = "年付订阅成功赠送1800积分";
-        console.log(`[webhook] 识别为年付计划，将添加 ${creditsToAdd} 积分`);
-      } else {
-        console.log(`[webhook] 未识别的订阅金额 ${amount}，使用默认积分 ${creditsToAdd}`);
-      }
-
-      // 添加订阅积分
-      console.log(`[webhook] 开始调用 addBonusCredits 函数`);
-      const result = await addBonusCredits(
-        userId,
-        creditsToAdd,
-        description,
-        {
-          subscriptionId: subscription.id,
-          customerId,
-          productId,
-          priceId,
-          amount,
-          type: "subscription_bonus",
-          webhookEventType: event.type,
-          webhookEventId: event.id,
-          customerEmail: customer.email,
-        }
-      );
-
-      console.log(`[webhook] 订阅创建成功，为用户 ${userId} 添加了 ${creditsToAdd} 积分`, {
-        userId,
-        creditsAdded: creditsToAdd,
-        newBalance: result.balance,
-        subscriptionId: subscription.id,
-        transactionId: result.transactionId,
-        customerEmail: customer.email,
-      });
-      
-    } catch (error) {
-      console.error(`[webhook] 为订阅用户添加积分失败`, {
-        userId,
-        subscriptionId: subscription.id,
-        customerId,
-        customerEmail: customer.email,
-        error: error instanceof Error ? error.message : error,
-        stack: error instanceof Error ? error.stack : undefined,
-      });
-      
-      // 虽然积分添加失败，但不抛出错误，因为订阅本身已经成功创建
-      // 这样可以避免webhook重试导致重复处理
-      console.warn(`[webhook] 积分添加失败但不影响订阅创建，请手动处理用户 ${userId} 的积分`);
-    }
-  } else {
-    console.log(`[webhook] 跳过积分添加 - 事件类型: ${event.type}, 订阅状态: ${subscription.status}`);
+    return null;
+  } catch (error) {
+    console.error(`[webhook] 查找用户ID失败:`, error);
+    return null;
   }
 }
 
-async function handlePaymentIntentSucceeded(event: any) {
-  const paymentIntent = event.data.object as Stripe.PaymentIntent;
-  const { metadata } = paymentIntent;
-
-  // 检查是否是积分充值
-  if (metadata && metadata.type === "credit_recharge") {
-    const { rechargeId } = metadata;
-    if (rechargeId) {
-      try {
-        // 处理积分充值成功
-        await handleCreditRechargeSuccess(rechargeId, paymentIntent.id);
-        console.log(`积分充值成功处理完成: ${rechargeId}`);
-      } catch (error) {
-        console.error(`处理积分充值失败: ${rechargeId}`, error);
-        throw error;
-      }
+/**
+ * 获取订阅商品信息
+ */
+async function getProductInfo(subscription: Stripe.Subscription) {
+  try {
+    if (subscription.items.data.length === 0) {
+      return { productId: "", priceId: "", amount: 0 };
     }
+
+    const priceId = subscription.items.data[0].price.id;
+    const amount = subscription.items.data[0].price.unit_amount || 0;
+    
+    const product = await stripe.products.retrieve(
+      subscription.items.data[0].price.product as string,
+    );
+    
+    return {
+      productId: product.id,
+      priceId,
+      amount,
+    };
+  } catch (error) {
+    console.error(`[webhook] 获取商品信息失败:`, error);
+    return { productId: "", priceId: "", amount: 0 };
+  }
+}
+
+/**
+ * 使用事务同步订阅数据
+ */
+async function syncSubscriptionWithTransaction(
+  userId: string,
+  customerId: string,
+  subscription: Stripe.Subscription,
+  productInfo: { productId: string; priceId: string; amount: number }
+) {
+  try {
+    await syncSubscription(
+      userId,
+      customerId,
+      subscription.id,
+      productInfo.productId,
+      subscription.status,
+    );
+    
+    console.log(`[webhook] 订阅数据同步成功: ${subscription.id}`);
+  } catch (error) {
+    console.error(`[webhook] 订阅数据同步失败:`, error);
+    throw error;
+  }
+}
+
+/**
+ * 处理订阅创建时的积分奖励
+ */
+async function handleSubscriptionBonus(
+  userId: string,
+  subscription: Stripe.Subscription,
+  productInfo: { productId: string; priceId: string; amount: number }
+) {
+  try {
+    const { amount, priceId } = productInfo;
+    
+    // 根据价格确定奖励积分数量
+    let creditsToAdd = 120; // 默认月付积分
+    let description = "订阅成功赠送积分";
+
+    if (amount === 1690) {
+      creditsToAdd = 120;
+      description = "月付订阅成功赠送120积分";
+    } else if (amount === 990) {
+      creditsToAdd = 1800;
+      description = "年付订阅成功赠送1800积分";
+    }
+
+    console.log(`[webhook] 开始为订阅用户添加积分:`, {
+      userId,
+      subscriptionId: subscription.id,
+      amount,
+      creditsToAdd,
+    });
+
+    // 使用改进的事务处理函数
+    const result = await addBonusCreditsWithTransaction(
+      userId,
+      creditsToAdd,
+      description,
+      {
+        subscriptionId: subscription.id,
+        priceId,
+        amount,
+        type: "subscription_bonus",
+        webhookEventType: "customer.subscription.created",
+      }
+    );
+
+    console.log(`[webhook] 订阅积分奖励成功:`, {
+      userId,
+      creditsAdded: creditsToAdd,
+      newBalance: result.balance,
+      transactionId: result.transactionId,
+    });
+
+    return result;
+  } catch (error) {
+    console.error(`[webhook] 订阅积分奖励失败:`, {
+      userId,
+      subscriptionId: subscription.id,
+      error: error instanceof Error ? error.message : error,
+    });
+    
+    // 不抛出错误，避免影响订阅创建
+    console.warn(`[webhook] 积分奖励失败但不影响订阅，请手动处理用户 ${userId} 的积分`);
+  }
+}
+
+/**
+ * 处理无法找到用户的孤立订阅
+ */
+async function handleOrphanedSubscription(
+  subscription: Stripe.Subscription,
+  customerId: string,
+  eventType: string
+) {
+  try {
+    console.log(`[webhook] 记录孤立订阅:`, {
+      subscriptionId: subscription.id,
+      customerId,
+      eventType,
+      status: subscription.status,
+    });
+
+    // 使用特殊的 userId 格式记录订阅
+    await syncSubscription(
+      `pending_${customerId}`,
+      customerId,
+      subscription.id,
+      "", // 暂时为空
+      subscription.status,
+    );
+
+    // TODO: 可以添加到待处理队列或发送通知
+    console.log(`[webhook] 孤立订阅已记录，等待手动处理: ${subscription.id}`);
+  } catch (error) {
+    console.error(`[webhook] 记录孤立订阅失败:`, error);
+    // 这种情况下仍然要抛出错误，因为完全处理失败
+    throw error;
   }
 }

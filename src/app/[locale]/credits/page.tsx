@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 import { getCurrentSupabaseUserOrRedirect } from "~/lib/supabase-auth";
-import { CreditBalance } from "~/ui/components/payment/credit-balance";
-import { CreditTransactions } from "~/ui/components/payment/credit-transactions";
+import { CreditBalance } from "~/components/payment/credit-balance";
+import { CreditTransactions } from "~/components/payment/credit-transactions";
 
 export default async function CreditsPage() {
   const t = await getTranslations("Payment");

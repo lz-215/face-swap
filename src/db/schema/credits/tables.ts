@@ -55,6 +55,7 @@ export const creditRechargeTable = pgTable("credit_recharge", {
     createdAt: timestamp("created_at").defaultNow().notNull(),
     currency: text("currency").notNull().default("usd"), // 货币类型
     id: text("id").primaryKey(),
+    metadata: text("metadata"), // 充值元数据（JSON字符串）
     paymentIntentId: text("payment_intent_id"), // Stripe支付意图ID
     paymentMethod: text("payment_method"), // 支付方式
     price: integer("price").notNull(), // 支付金额（美分）
@@ -73,7 +74,7 @@ export const creditPackageTable = pgTable("credit_package", {
     description: text("description"), // 套餐描述
     id: text("id").primaryKey(),
     isActive: integer("is_active").notNull().default(1), // 是否激活
-    isPopular: integer("is_popular").default(0), // 是否热门（0不是，1是）
+    isPopular: integer("is_popular").default(0), // 是否热门（不是热门）
     name: text("name").notNull(), // 套餐名称
     price: integer("price").notNull(), // 价格（美分）
     sortOrder: integer("sort_order").default(0), // 排序顺序
@@ -82,11 +83,11 @@ export const creditPackageTable = pgTable("credit_package", {
 
 // 积分消费配置表
 export const creditConsumptionConfigTable = pgTable("credit_consumption_config", {
-    actionType: text("action_type").notNull(), // 操作类型，如'colorize_image', 'enhance_image'等
+    actionType: text("action_type").notNull(), // 操作类型，如'colorize_image', 'enhance_image'?
     createdAt: timestamp("created_at").defaultNow().notNull(),
     creditsRequired: integer("credits_required").notNull(), // 所需积分数量
     description: text("description"), // 描述
     id: text("id").primaryKey(),
-    isActive: integer("is_active").notNull().default(1), // 是否激活
+    isActive: integer("is_active").notNull().default(1), // 是否激活?
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

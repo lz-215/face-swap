@@ -6,9 +6,9 @@ import {
   CardTitle,
   CardContent,
   CardFooter,
-} from "~/ui/primitives/card";
-import { Button } from "~/ui/primitives/button";
-import { Badge } from "~/ui/primitives/badge";
+} from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Badge } from "~/components/ui/badge";
 import { Check, Flame, Info, Zap, Coins, X, Plus } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";

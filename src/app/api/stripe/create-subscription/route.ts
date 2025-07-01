@@ -1,7 +1,7 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
-import { stripe } from "~/lib/stripe";
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
 
 // 定义请求体的类型
 interface CreateSubscriptionRequest {
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 创建订阅
-    console.log(`为客户 ${customer.id} 创建订阅，价格: ${priceId}`);
+    console.log(`为客户 ${customer.id} 创建订阅，价格 ${priceId}`);
     let subscription: Stripe.Subscription;
     try {
       subscription = await stripe.subscriptions.create({
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
     // 获取发票对象
     let invoice: Stripe.Invoice;
     if (typeof subscription.latest_invoice === 'string') {
-      console.log(`latest_invoice 是字符串 ID: ${subscription.latest_invoice}，正在获取完整发票...`);
+      console.log(`latest_invoice 是字符串 ID: ${subscription.latest_invoice}，正在获取完整发票..`);
       invoice = await stripe.invoices.retrieve(subscription.latest_invoice, {
         expand: ['payment_intent']
       });
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
     const invoiceWithPaymentIntent = invoice as any;
     if (invoiceWithPaymentIntent.payment_intent) {
       if (typeof invoiceWithPaymentIntent.payment_intent === 'string') {
-        console.log(`payment_intent 是字符串 ID: ${invoiceWithPaymentIntent.payment_intent}，正在获取完整对象...`);
+        console.log(`payment_intent 是字符串 ID: ${invoiceWithPaymentIntent.payment_intent}，正在获取完整对象..`);
         paymentIntent = await stripe.paymentIntents.retrieve(invoiceWithPaymentIntent.payment_intent);
       } else {
         console.log('payment_intent 已是完整对象');
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
 
     // 方法2：如果没有获取到，创建新的 PaymentIntent
     if (!paymentIntent) {
-      console.log('未找到现有的 PaymentIntent，创建新的...');
+      console.log('未找到现有的 PaymentIntent，创建新的..');
       paymentIntent = await stripe.paymentIntents.create({
         amount: invoice.amount_due,
         currency: invoice.currency,

@@ -18,7 +18,9 @@
     "privacy": "Privacy Policy",
     "subTitle": "Sign in or Create account to continue",
     "emailPlaceholder": "your@email.com",
-    "redirecting": "Login successful, redirecting..."
+    "redirecting": "Login successful, redirecting...",
+    "welcome": "Welcome!",
+    "continueWithGithub": "Continue with Github"
   },
   "Common": {
     "cancel": "Cancel",
@@ -37,7 +39,10 @@
     "submit": "Submit",
     "success": "Success",
     "tryAgain": "Try again",
-    "upload": "Upload"
+    "upload": "Upload",
+    "goBack": "Go back",
+    "previousPage": "Previous page",
+    "signOutAction": "This action will log you out of your account."
   },
   "Error": {
     "generic": "Something went wrong",
@@ -313,17 +318,28 @@
     "after": "After",
     "info": {
       "validatingFile": "Validating file...",
-      "checkingAuth": "Checking authentication..."
+      "checkingAuth": "Checking authentication...",
+      "addingWatermark": "Adding watermark to image...",
+      "checkingSubscription": "Checking subscription status...",
+      "downloadStarting": "Image download started",
+      "memberNoWatermark": "Member user, downloading watermark-free image",
+      "nonMemberWatermark": "Upgrade to member to download watermark-free HD images!"
     },
     "success": {
       "imageUploaded": "Image uploaded successfully!",
-      "faceSwapComplete": "Face swap completed successfully!"
+      "faceSwapComplete": "Face swap completed successfully!",
+      "watermarkAdded": "Watermark added successfully",
+      "downloadReady": "Image ready for download"
     },
     "error": {
       "missingImages": "Please upload both images before swapping.",
       "noCreditsLeft": "No credits left, please recharge!",
       "validationFailed": "File validation failed. Please try again.",
-      "faceSwapFailed": "Face swap failed. Please try again."
+      "faceSwapFailed": "Face swap failed. Please try again.",
+      "loginRequired": "Please login before downloading the image",
+      "downloadFailed": "Download failed, please try again",
+      "watermarkFailed": "Failed to add watermark, downloading original image",
+      "subscriptionCheckFailed": "Failed to check subscription status"
     },
     "warning": {
       "creditConsumptionFailed": "Face swap completed, but failed to update credits."
@@ -339,6 +355,17 @@
       ],
       "loginButton": "Sign In Now",
       "cancelButton": "Maybe Later"
+    },
+    "pro": {
+      "title": "Unlock All AI Face Swap Features",
+      "description": "Upgrade to Pro for unlimited AI face swapping experience and premium quality service.",
+      "feature1": "Unlimited AI face swaps",
+      "feature2": "HD watermark-free output",
+      "feature3": "Priority processing queue",
+      "button": "Upgrade to Pro Now",
+      "tryNow": "Try Now",
+      "qualityAssurance": "High-quality AI algorithm guarantee",
+      "privacyProtection": "Secure privacy protection"
     }
   },
   "FaceSwapTypes": {

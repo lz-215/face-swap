@@ -47,7 +47,7 @@ export const twoFactor = {
 
       return { success: true };
     } catch (error) {
-      console.error('禁用双因素认证失败:', error);
+      console.error('禁用双因素认证失败', error);
       return { error };
     }
   },
@@ -86,7 +86,7 @@ export const twoFactor = {
         },
       };
     } catch (error) {
-      console.error('启用双因素认证失败:', error);
+      console.error('启用双因素认证失败', error);
       return { error };
     }
   },
@@ -112,7 +112,7 @@ export const twoFactor = {
         },
       };
     } catch (error) {
-      console.error('获取 MFA 状态失败:', error);
+      console.error('获取 MFA 状态失败', error);
       return { error };
     }
   },

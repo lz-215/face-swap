@@ -1,7 +1,7 @@
 import "server-only";
 import { eq } from "drizzle-orm";
 
-import type { User } from "~/db/schema/users/types";
+import type { User } from "../../db/schema/users/types";
 
 import { db } from "~/db";
 import { userTable } from "~/db/schema";

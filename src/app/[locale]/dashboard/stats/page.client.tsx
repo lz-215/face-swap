@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 
 import { supabaseAuth, useSupabaseSession } from "~/lib/supabase-auth-client";
 import { twoFactor } from "~/lib/supabase-mfa";
-import { Button } from "~/ui/primitives/button";
+import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
@@ -15,8 +15,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "~/ui/primitives/card";
-import { Skeleton } from "~/ui/primitives/skeleton";
+} from "~/components/ui/card";
+import { Skeleton } from "~/components/ui/skeleton";
 
 interface DashboardPageClientProps {
   user?: null | User;

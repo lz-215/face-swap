@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Face++ API 响应类型定义
+interface FacePPResponse {
+  error_message?: string;
+  [key: string]: unknown;
+}
+
 const FACEPP_API_KEY = process.env.FACEPP_API_KEY;
 const FACEPP_API_SECRET = process.env.FACEPP_API_SECRET;
 
@@ -51,9 +57,9 @@ export async function GET() {
     }
 
     // 尝试解析JSON响应
-    let parsedData;
+    let parsedData: FacePPResponse;
     try {
-      parsedData = JSON.parse(data);
+      parsedData = JSON.parse(data) as FacePPResponse;
     } catch (jsonError) {
       return NextResponse.json({
         success: false,

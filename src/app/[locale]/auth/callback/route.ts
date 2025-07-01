@@ -1,12 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 
 import { SYSTEM_CONFIG } from "~/app";
-import { getI18n } from "~/i18n/i18nServer";
 import { createClient } from "~/lib/supabase/server";
 
 // 处理 Supabase Auth 重定向回调
 export async function GET(request: NextRequest) {
-  const t = await getI18n();
+  const t = await getTranslations('Auth');
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
 
@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
          <body>
            <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: Arial, sans-serif;">
              <div style="text-align: center;">
-               <div style="margin-bottom: 20px;">${t('Auth.redirecting')}</div>
+               <div style="margin-bottom: 20px;">${t('redirecting')}</div>
                <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
              </div>
            </div>

@@ -6,13 +6,14 @@ import { useTranslations } from "next-intl";
 import { useMounted } from "~/lib/hooks/use-mounted";
 import { supabaseAuth } from "~/lib/supabase-auth-client";
 import { cn } from "~/lib/utils";
-import { Button, buttonVariants } from "~/ui/primitives/button";
-import { Skeleton } from "~/ui/primitives/skeleton";
+import { Button, buttonVariants } from "~/components/ui/button";
+import { Skeleton } from "~/components/ui/skeleton";
 
 export function SignOutPageClient() {
   const router = useRouter();
   const mounted = useMounted();
   const t = useTranslations("Navigation");
+  const tCommon = useTranslations("Common");
 
   const handlePageBack = async () => {
     router.back();
@@ -34,14 +35,18 @@ export function SignOutPageClient() {
       `}
     >
       <Button onClick={handlePageBack} size="default" variant="outline">
-        Go back
-        <span className="sr-only">Previous page</span>
+        {tCommon("goBack", { defaultMessage: "Go back" })}
+        <span className="sr-only">
+          {tCommon("previousPage", { defaultMessage: "Previous page" })}
+        </span>
       </Button>
       {mounted ? (
         <Button onClick={handleSignOut} size="default" variant="secondary">
           {t("signOut")}
           <span className="sr-only">
-            This action will log you out of your account.
+            {tCommon("signOutAction", {
+              defaultMessage: "This action will log you out of your account.",
+            })}
           </span>
         </Button>
       ) : (
@@ -51,7 +56,7 @@ export function SignOutPageClient() {
             "bg-muted text-muted-foreground"
           )}
         >
-          Log out
+          {t("signOut")}
         </Skeleton>
       )}
     </div>

@@ -12,12 +12,12 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { SEO_CONFIG } from "~/app";
 import { CartProvider } from "~/lib/hooks/use-cart";
-import { Footer } from "~/ui/components/footer";
-import { Header } from "~/ui/components/header/header";
-import { ThemeProvider } from "~/ui/components/theme-provider";
-import { Toaster } from "~/ui/primitives/sonner";
-import { ConditionalFooter } from "~/ui/components/conditional-footer";
-import { ErrorBoundary } from "~/ui/components/error-boundary";
+import { Footer } from "~/components/footer";
+import { Header } from "~/components/header/header";
+import { ThemeProvider } from "~/components/theme-provider";
+import { Toaster } from "~/components/ui/sonner";
+import { ConditionalFooter } from "~/components/conditional-footer";
+import { ErrorBoundary } from "~/components/error-boundary";
 
 const geistSans = Geist({
   subsets: ["latin"],

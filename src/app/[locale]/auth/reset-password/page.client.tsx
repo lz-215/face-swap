@@ -7,10 +7,10 @@ import { useState } from "react";
 import { useLocale } from "next-intl";
 
 import { SEO_CONFIG } from "~/app";
-import { Button } from "~/ui/primitives/button";
-import { Card, CardContent } from "~/ui/primitives/card";
-import { Input } from "~/ui/primitives/input";
-import { Label } from "~/ui/primitives/label";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 
 export function ResetPasswordClient() {
   const router = useRouter();

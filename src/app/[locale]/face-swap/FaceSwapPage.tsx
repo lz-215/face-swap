@@ -3,25 +3,27 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useAuth } from "~/hooks/use-auth";
-import { useCreditsV2 } from "~/hooks/use-credits-v2";
+import { useAuth } from "~/lib/hooks/use-auth";
+import { useCreditsV2 } from "~/lib/hooks/use-credits-v2";
+import { useSubscription } from "~/lib/hooks/use-subscription";
 import { toast } from "sonner";
 import {
   validateFile,
   FACE_SWAP_VALIDATION_OPTIONS,
 } from "~/lib/file-validation";
-import { useLoading } from "~/hooks/use-loading";
-import { Button } from "~/ui/primitives/button";
+import { useLoading } from "~/lib/hooks/use-loading";
+import { Button } from "~/components/ui/button";
+import { addWatermarkToImage, cleanupBlobUrl } from "~/lib/utils/watermark";
 
 // 导入新拆分的组件
-import { ImageUploadStep } from "~/ui/components/face-swap/image-upload-step";
-import { FaceSwapStep } from "~/ui/components/face-swap/face-swap-step";
-import { ResultPreview } from "~/ui/components/face-swap/result-preview";
-import { TemplateGallery } from "~/ui/components/face-swap/template-gallery";
-import { FullscreenModal } from "~/ui/components/face-swap/fullscreen-modal";
-import { FeaturePromotion } from "~/ui/components/face-swap/feature-promotion";
-import { LoginPromptDialog } from "~/ui/components/face-swap/login-prompt-dialog";
-import { FaceSwapDebug } from "~/ui/components/face-swap/face-swap-debug";
+import { ImageUploadStep } from "~/components/face-swap/image-upload-step";
+import { FaceSwapStep } from "~/components/face-swap/face-swap-step";
+import { ResultPreview } from "~/components/face-swap/result-preview";
+import { TemplateGallery } from "~/components/face-swap/template-gallery";
+import { FullscreenModal } from "~/components/face-swap/fullscreen-modal";
+import { FeaturePromotion } from "~/components/face-swap/feature-promotion";
+import { LoginPromptDialog } from "~/components/face-swap/login-prompt-dialog";
+import { FaceSwapDebug } from "~/components/face-swap/face-swap-debug";
 
 // API响应类型
 type FaceSwapResponse = {
@@ -72,6 +74,10 @@ export default function FaceSwapPage() {
   } = useCreditsV2();
 
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
+
+  // 订阅状态检查
+  const { hasActiveSubscription, isLoading: subscriptionLoading } =
+    useSubscription();
 
   // 初始化模板
   useEffect(() => {
@@ -318,7 +324,7 @@ export default function FaceSwapPage() {
       // 根据错误类型提供不同的建议
       if (errorMessage.includes("API not configured")) {
         displayMessage =
-          "⚙️ 系统配置问题：Face++ API 未正确配置。请检查环境变量设置。";
+          "⚙️ 系统配置问题：AI服务 API 未正确配置。请检查环境变量设置。";
       } else if (errorMessage.includes("temporarily unavailable")) {
         displayMessage = "🌐 服务暂时不可用，请稍后重试。";
       } else if (errorMessage.includes("clear faces")) {
@@ -335,14 +341,89 @@ export default function FaceSwapPage() {
     }
   });
 
-  // 下载图片
-  const handleDownload = () => {
+  // 下载图片（支持水印功能）
+  const handleDownload = withLoading("download", async () => {
     if (!result) return;
-    const link = document.createElement("a");
-    link.href = result;
-    link.download = "face-swap-result.png";
-    link.click();
-  };
+
+    // 检查用户认证状态
+    if (!isAuthenticated) {
+      toast.error(t("error.loginRequired"));
+      setShowLoginPrompt(true);
+      return;
+    }
+
+    // 检查订阅状态加载中
+    if (subscriptionLoading) {
+      toast.info(t("info.checkingSubscription"));
+      return;
+    }
+
+    try {
+      let downloadUrl = result;
+      let filename = "face-swap-result.png";
+
+      // 如果用户没有有效订阅，添加水印
+      if (!hasActiveSubscription) {
+        toast.info(t("info.addingWatermark"), { id: "watermark-processing" });
+
+        try {
+          // 添加水印
+          const watermarkedUrl = await addWatermarkToImage(result, {
+            text: "AI换脸工具网站 - 升级会员免水印",
+            fontSize: Math.max(
+              24,
+              Math.min(48, Math.floor(window.innerWidth * 0.03))
+            ),
+            color: "#ffffff",
+            opacity: 0.8,
+            position: "bottom-right",
+            margin: 30,
+            rotation: -15,
+          });
+
+          downloadUrl = watermarkedUrl;
+          filename = "face-swap-result-watermarked.png";
+
+          toast.success(t("success.watermarkAdded"), {
+            id: "watermark-processing",
+          });
+
+          // 显示升级提示
+          toast.info(t("info.nonMemberWatermark"), {
+            duration: 5000,
+            action: {
+              label: t("pro.button"),
+              onClick: () => router.push("/pricing"),
+            },
+          });
+        } catch (watermarkError) {
+          console.error("添加水印失败:", watermarkError);
+          toast.error(t("error.watermarkFailed"));
+          // 如果水印添加失败，仍然允许下载原图
+        }
+      } else {
+        toast.success(t("info.memberNoWatermark"));
+      }
+
+      // 创建下载链接
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // 清理blob URL（如果是水印图片）
+      if (downloadUrl !== result) {
+        setTimeout(() => cleanupBlobUrl(downloadUrl), 1000);
+      }
+
+      toast.success(t("info.downloadStarting"));
+    } catch (error) {
+      console.error("下载失败:", error);
+      toast.error(t("error.downloadFailed"));
+    }
+  });
 
   // 模板点击处理
   const handleTemplateClick = (tpl: string) => {
@@ -437,8 +518,14 @@ export default function FaceSwapPage() {
         />
       </div>
 
-      {/* 功能推广 */}
-      <FeaturePromotion onUpgrade={handleUpgrade} className="mb-8" />
+      {/* 升级到Pro的推广 */}
+      <FeaturePromotion
+        onClick={handleUpgrade}
+        title={t("pro.title")}
+        description={t("pro.description")}
+        features={[t("pro.feature1"), t("pro.feature2"), t("pro.feature3")]}
+        buttonText={t("pro.button")}
+      />
 
       {/* 模板库 */}
       <TemplateGallery

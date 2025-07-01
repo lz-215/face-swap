@@ -18,7 +18,9 @@
     "privacy": "隐私政策",
     "subTitle": "登录或创建账户以继续",
     "emailPlaceholder": "请输入邮箱",
-    "redirecting": "登录成功，正在跳转..."
+    "redirecting": "登录成功，正在跳转...",
+    "welcome": "欢迎！",
+    "continueWithGithub": "使用GitHub继续"
   },
   "Common": {
     "cancel": "取消",
@@ -37,7 +39,10 @@
     "submit": "提交",
     "success": "成功",
     "tryAgain": "重试",
-    "upload": "上传"
+    "upload": "上传",
+    "goBack": "返回",
+    "previousPage": "上一页",
+    "signOutAction": "此操作将退出您的账户。"
   },
   "Error": {
     "generic": "出现错误",
@@ -117,15 +122,15 @@
     "step3Desc": "点击换脸按钮，让Swapify.AI的AI为你实现魔法。几秒钟后，你的换脸图片就会自然、真实地生成。",
     "faqsTitle": "AI换脸常见问题",
     "faq1q": "什么是AI换脸？",
-    "faq1a": "AI换脸是一种由人工智能驱动的技术，可以将图片或视频中的某个人脸替换为另一个人脸。该技术通过分析面部特征、表情和光照条件，实现自然流畅的换脸效果。",
-    "faq2q": "AI换脸的原理是什么？",
-    "faq2a": "AI换脸采用先进的深度学习算法（如GAN），通过分析和映射关键面部特征（如眼睛、鼻子、嘴巴），实现无缝融合，并自动调整光照、肤色和表情，使换脸结果自然真实。",
-    "faq3q": "AI换脸安全吗？",
-    "faq3a": "是的，您的隐私是我们的首要任务。上传的照片和生成的结果会在24-48小时内删除，整个过程中不会收集任何个人数据。",
-    "faq4q": "可以在手机上换脸吗？",
-    "faq4a": "可以，Swapify.AI完全兼容Safari、Chrome等移动端浏览器，支持iPhone和安卓设备在线换脸。",
-    "faq5q": "支持性别互换吗？",
-    "faq5a": "支持，您可以用Swapify.AI将男性变为女性，或反之，非常适合娱乐和创意内容。",
+    "faq1a": "AI换脸是一种利用人工智能技术将照片或视频中的人脸替换为另一个人脸的技术。",
+    "faq2q": "如何使用换脸工具？",
+    "faq2a": "只需上传原始图片和人脸图片，然后点击\"开始换脸\"按钮即可获得结果。",
+    "faq3q": "是否免费使用？",
+    "faq3a": "是的，我们提供免费试用，让您体验AI换脸的强大功能。",
+    "faq4q": "支持哪些文件格式？",
+    "faq4a": "我们支持JPG、PNG等多种图片格式。",
+    "faq5q": "我的数据安全吗？",
+    "faq5a": "我们优先保护您的隐私。所有上传的图片都会被安全处理，不会被存储或用于其他用途。",
     "userTestimonialsTitle": "用户怎么评价Swapify.AI",
     "testimonial1Title": "非常适合我的营销活动！",
     "testimonial1Content": "Swapify.AI已成为我制作吸睛营销内容的首选工具。效果总是令人印象深刻且专业，让我们的活动独一无二。即使没有设计基础也很容易上手。",
@@ -240,8 +245,8 @@
       "优先处理",
       "邮件支持"
     ],
-    "pricingFeatures": "Face swap for 120 images; No watermark; Priority processing; Email support.",
-    "pricingFeaturesMonthly": "Face swap for 120 images; No watermark; Priority processing; Email support."
+    "pricingFeatures": "可处理120张图片；无水印；优先处理；邮件支持",
+    "pricingFeaturesMonthly": "可处理120张图片；无水印；优先处理；邮件支持"
   },
   "Settings": {
     "account": "账户",
@@ -325,17 +330,15 @@
   "FAQ": {
     "faqsTitle": "AI换脸常见问题",
     "faq1q": "什么是AI换脸？",
-    "faq1a": "AI换脸是一种利用人工智能在照片或视频中将一张脸替换成另一张脸的技术。它通过分析面部特征和光照来创造无缝且逼真的效果。",
-    "faq2q": "AI换脸是免费的吗？",
-    "faq2a": "是的，Swapify.AI提供免费的在线换脸工具，并提供大量的积分供您入门。您也可以购买额外的积分或订阅计划以获得更多功能。",
-    "faq3q": "换一张脸需要多长时间？",
-    "faq3a": "这个过程非常快。大多数换脸在几秒钟内完成，具体取决于图像的大小和质量。",
-    "faq4q": "哪种类型的图像最适合换脸？",
-    "faq4a": "为获得最佳效果，请使用光线充足、面部清晰可见的高质量图像。避免使用有手或头发遮挡面部的图像。",
-    "faq5q": "我可以在视频中使用AI换脸吗？",
-    "faq5a": "是的，我们的工具支持照片和视频。您可以上传视频，在任何场景中换脸，就像在照片中换脸一样简单。",
-    "faq6q": "我的数据安全吗？",
-    "faq6a": "我们非常重视您的隐私。所有上传的图像都会被安全处理，不会与第三方共享。您可以随时删除您的数据。"
+    "faq1a": "AI换脸是一种利用人工智能技术将照片或视频中的人脸替换为另一个人脸的技术。",
+    "faq2q": "如何使用换脸工具？",
+    "faq2a": "只需上传原始图片和人脸图片，然后点击\"开始换脸\"按钮即可获得结果。",
+    "faq3q": "是否免费使用？",
+    "faq3a": "是的，我们提供免费试用，让您体验AI换脸的强大功能。",
+    "faq4q": "支持哪些文件格式？",
+    "faq4a": "我们支持JPG、PNG等多种图片格式。",
+    "faq5q": "我的数据安全吗？",
+    "faq5a": "我们优先保护您的隐私。所有上传的图片都会被安全处理，不会被存储或用于其他用途。"
   },
   "History": {
     "title": "历史记录",
@@ -397,9 +400,9 @@
     "errorNoFace": "请上传目标人脸图片",
     "errorSwapFailed": "换脸失败，请重试",
     "errorSwapError": "换脸出错，请稍后重试",
-    "featureMac": "Supports Mac",
-    "before": "Before",
-    "after": "After",
+    "featureMac": "支持Mac系统",
+    "before": "处理前",
+    "after": "处理后",
     "loginPrompt": {
       "title": "需要登录才能使用换脸功能",
       "description": "登录后即可享受AI人脸替换服务，还可以查看历史记录和管理您的作品。",
@@ -414,20 +417,42 @@
     },
     "info": {
       "validatingFile": "正在验证文件...",
-      "checkingAuth": "正在检查认证状态..."
+      "checkingAuth": "正在检查认证状态...",
+      "addingWatermark": "正在为图片添加水印...",
+      "checkingSubscription": "正在检查订阅状态...",
+      "downloadStarting": "图片下载开始",
+      "memberNoWatermark": "会员用户，下载无水印图片",
+      "nonMemberWatermark": "升级会员即可下载无水印高清图片！"
     },
     "success": {
       "imageUploaded": "图片上传成功！",
-      "faceSwapComplete": "换脸完成！"
+      "faceSwapComplete": "换脸完成！",
+      "watermarkAdded": "水印添加完成",
+      "downloadReady": "图片已准备下载"
     },
     "error": {
       "missingImages": "请先上传两张图片再进行换脸。",
       "noCreditsLeft": "积分不足，请先充值！",
       "validationFailed": "文件验证失败，请重试。",
-      "faceSwapFailed": "换脸失败，请重试。"
+      "faceSwapFailed": "换脸失败，请重试。",
+      "loginRequired": "请先登录后再下载图片",
+      "downloadFailed": "下载失败，请重试",
+      "watermarkFailed": "添加水印失败，将下载原图",
+      "subscriptionCheckFailed": "检查订阅状态失败"
     },
     "warning": {
       "creditConsumptionFailed": "换脸已完成，但积分扣除失败。"
+    },
+    "pro": {
+      "title": "解锁全部AI换脸功能",
+      "description": "升级到专业版，享受无限制的AI换脸体验和高质量服务。",
+      "feature1": "无限制AI换脸次数",
+      "feature2": "高清无水印输出",
+      "feature3": "优先处理队列",
+      "button": "立即升级专业版",
+      "tryNow": "立即体验",
+      "qualityAssurance": "高质量AI算法保证",
+      "privacyProtection": "安全保护隐私"
     }
   },
   "FaceSwapTypes": {

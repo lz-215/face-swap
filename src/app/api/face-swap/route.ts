@@ -10,7 +10,7 @@ const FACEPP_MERGEFACE_URL = process.env.FACEPP_MERGEFACE_URL || "https://api-cn
 
 // 验证环境变量配置
 if (!FACEPP_API_KEY || !FACEPP_API_SECRET) {
-  console.error("❌ Face++ API credentials not configured");
+  console.error("⚠️ Face++ API credentials not configured");
   console.error("Please set FACEPP_API_KEY and FACEPP_API_SECRET in your environment variables");
   console.error("You can get these from: https://console.faceplusplus.com.cn/");
 }

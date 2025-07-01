@@ -6,9 +6,31 @@
 
 AIFaceSwap是一个专业的AI人脸交换应用，使用先进的人工智能技术实现高质量的人脸交换效果。用户可以轻松上传照片，将不同人物的面部特征进行交换，创造有趣的视觉效果。
 
+## ✨ 特性
+
+- **AI人脸交换**：使用先进AI算法实现高质量的人脸交换
+- **实时预览**：上传即可预览效果，支持拖拽分割对比
+- **安全可靠**：图片仅临时处理，不会永久存储
+- **国际化支持**：支持中文和英文界面
+- **响应式设计**：完美适配桌面和移动设备
+- **用户系统**：支持GitHub和Google第三方登录
+- **积分系统**：基于积分的公平使用机制
+
+## 🏗 技术栈
+
+- **前端框架**：Next.js 15 (App Router)
+- **UI组件**：Tailwind CSS + Shadcn/ui
+- **语言**：TypeScript
+- **认证系统**：Supabase Auth
+- **数据库**：Supabase PostgreSQL
+- **文件存储**：Supabase Storage
+- **AI服务**：先进的人脸交换API
+- **部署平台**：Vercel
+- **国际化**：next-intl
+
 ## 主要功能
 
-- **AI人脸交换**：使用Face++先进算法实现高质量的人脸交换
+- **AI人脸交换**：使用先进AI算法实现高质量的人脸交换
 - **实时预览**：支持拖拽分割线对比交换前后效果
 - **多种模板**：提供丰富的模板库供用户选择
 - **安全验证**：完整的文件验证机制，确保上传安全
@@ -25,7 +47,7 @@ AIFaceSwap是一个专业的AI人脸交换应用，使用先进的人工智能�
 - 智能文件验证和安全检查
 
 ### ⚡ **高性能处理**
-- 基于Face++ API的专业人脸交换算法
+- 基于先进AI API的专业人脸交换算法
 - 支持高分辨率图片处理
 - 优化的图片压缩和传输
 
@@ -55,7 +77,7 @@ AIFaceSwap是一个专业的AI人脸交换应用，使用先进的人工智能�
 - **认证**：Supabase Auth
 - **数据库**：Supabase (PostgreSQL)
 - **存储**：Supabase Storage
-- **AI服务**：Face++ API
+- **AI服务**：先进的人脸交换API
 - **支付**：Stripe
 - **表单处理**：@tanstack/react-form
 
@@ -101,7 +123,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 # 数据库
 DATABASE_URL=your_database_url
 
-# Face++ API 配置 (必需)
+# AI服务 API 配置 (必需)
 FACEPP_API_KEY=your_facepp_api_key
 FACEPP_API_SECRET=your_facepp_api_secret
 FACEPP_MERGEFACE_URL=https://api-cn.faceplusplus.com/imagepp/v1/mergeface
@@ -277,8 +299,8 @@ POST /api/credits/consume
 
 ## 常见问题
 
-### Q: 如何获取Face++ API密钥？
-A: 访问 [Face++官网](https://www.faceplusplus.com/) 注册账户并创建应用获取API密钥。
+### Q: 如何配置AI服务API密钥？
+A: 请联系项目维护者获取AI服务的API密钥配置信息，或参考项目文档中的环境变量配置部分。
 
 ### Q: 支持哪些图片格式？
 A: 支持JPEG、PNG、WebP格式，文件大小限制10MB，建议尺寸256x256到2048x2048像素。

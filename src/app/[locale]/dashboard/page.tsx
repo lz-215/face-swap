@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "~/ui/primitives/card";
-import { Button } from "~/ui/primitives/button";
-import { Avatar, AvatarFallback } from "~/ui/primitives/avatar";
-import { Badge } from "~/ui/primitives/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Button } from "~/components/ui/button";
+import { Avatar, AvatarFallback } from "~/components/ui/avatar";
+import { Badge } from "~/components/ui/badge";
 import {
   CreditCard,
   User,
@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { useSupabaseSession } from "~/lib/supabase-auth-client";
 import { useTranslations } from "next-intl";
-import { useCreditsV2 } from "~/hooks/use-credits-v2";
+import { useCreditsV2 } from "~/lib/hooks/use-credits-v2";
 
 export default function DashboardPage() {
   const { user, loading } = useSupabaseSession();
@@ -33,15 +33,15 @@ export default function DashboardPage() {
     totalConsumed,
     isLoading: creditsLoading,
     error: creditsError,
-    refreshCredits,
+    fetchCredits,
   } = useCreditsV2();
 
   // 刷新积分数据
   useEffect(() => {
     if (user) {
-      refreshCredits();
+      fetchCredits();
     }
-  }, [user, refreshCredits]);
+  }, [user, fetchCredits]);
 
   if (loading) {
     return (
