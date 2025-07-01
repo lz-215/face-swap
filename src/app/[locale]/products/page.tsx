@@ -3,8 +3,8 @@
 import * as React from "react";
 
 import { useCart } from "~/lib/hooks/use-cart";
-import { ProductCard } from "~/ui/components/product-card";
-import { Button } from "~/ui/primitives/button";
+import { ProductCard } from "~/components/product-card";
+import { Button } from "~/components/ui/button";
 
 /* -------------------------------------------------------------------------- */
 /*                                   Types                                    */
@@ -129,7 +129,7 @@ export default function ProductsPage() {
       selectedCategory === "All"
         ? products
         : products.filter((p) => p.category === selectedCategory),
-    [selectedCategory],
+    [selectedCategory]
   );
 
   /* --------------------------- Handlers --------------------------------- */
@@ -145,11 +145,11 @@ export default function ProductsPage() {
             name: product.name,
             price: product.price,
           },
-          1, // (quantity) always adds 1 item to the cart
+          1 // (quantity) always adds 1 item to the cart
         );
       }
     },
-    [addItem],
+    [addItem]
   );
 
   const handleAddToWishlist = React.useCallback((productId: string) => {

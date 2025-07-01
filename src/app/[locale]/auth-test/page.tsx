@@ -34,7 +34,9 @@ export default function AuthTestPage() {
       const result = await response.json();
       setApiTestResult({ status: response.status, result });
     } catch (error) {
-      setApiTestResult({ error: error.message });
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      setApiTestResult({ error: errorMessage });
     } finally {
       setTesting(false);
     }

@@ -3,7 +3,7 @@ import { db } from "~/db";
 
 export async function GET() {
   try {
-    console.log("=== 数据库连接诊断开始 ===");
+    console.log("=== 数据库连接诊断开始===");
     
     // 检查环境变量
     const databaseUrl = process.env.DATABASE_URL || process.env.SUPABASE_DB_URL;
@@ -16,12 +16,12 @@ export async function GET() {
     }
 
     // 尝试简单的数据库查询
-    console.log("尝试连接数据库...");
+    console.log("尝试连接数据库..");
     const result = await db.execute(`SELECT version() as version, current_database() as database_name`);
     
-    console.log("数据库连接成功!");
-    console.log("数据库版本:", result.rows[0]?.version);
-    console.log("数据库名称:", result.rows[0]?.database_name);
+    console.log("数据库连接成功");
+    console.log("数据库版本?", result.rows[0]?.version);
+    console.log("数据库名称?", result.rows[0]?.database_name);
 
     // 检查现有表
     const tables = await db.execute(`
@@ -31,8 +31,8 @@ export async function GET() {
       ORDER BY table_name
     `);
 
-    const tableNames = tables.rows.map(row => row.table_name);
-    console.log("现有数据表:", tableNames);
+    const tableNames = tables.rows.map((row: any) => row.table_name);
+    console.log("现有数据表?", tableNames);
 
     return NextResponse.json({
       success: true,
@@ -48,7 +48,7 @@ export async function GET() {
     });
 
   } catch (error) {
-    console.error("数据库连接失败:", error);
+    console.error("数据库连接失败", error);
     
     return NextResponse.json({
       success: false,

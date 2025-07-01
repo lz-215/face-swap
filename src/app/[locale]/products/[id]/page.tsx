@@ -7,8 +7,8 @@ import * as React from "react";
 import { toast } from "sonner";
 
 import { useCart } from "~/lib/hooks/use-cart";
-import { Button } from "~/ui/primitives/button";
-import { Separator } from "~/ui/primitives/separator";
+import { Button } from "~/components/ui/button";
+import { Separator } from "~/components/ui/separator";
 
 /* -------------------------------------------------------------------------- */
 /*                               Type declarations                            */
@@ -261,7 +261,7 @@ export default function ProductDetailPage() {
   const discountPercentage = React.useMemo(() => {
     if (!product?.originalPrice) return 0;
     return Math.round(
-      ((product.originalPrice - product.price) / product.originalPrice) * 100,
+      ((product.originalPrice - product.price) / product.originalPrice) * 100
     );
   }, [product]);
 
@@ -282,7 +282,7 @@ export default function ProductDetailPage() {
         name: product.name,
         price: product.price,
       },
-      quantity,
+      quantity
     );
     setQuantity(1);
     toast.success(`${product.name} added to cart`);
@@ -386,8 +386,8 @@ export default function ProductDetailPage() {
                             i < Math.floor(product.rating)
                               ? "fill-primary text-primary"
                               : i < product.rating
-                                ? "fill-primary/50 text-primary"
-                                : "text-muted-foreground"
+                              ? "fill-primary/50 text-primary"
+                              : "text-muted-foreground"
                           }
                         `}
                         key={`star-${i}`}

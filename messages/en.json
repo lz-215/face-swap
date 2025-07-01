@@ -18,7 +18,9 @@
     "privacy": "Privacy Policy",
     "subTitle": "Sign in or Create account to continue",
     "emailPlaceholder": "your@email.com",
-    "redirecting": "Login successful, redirecting..."
+    "redirecting": "Login successful, redirecting...",
+    "welcome": "Welcome!",
+    "continueWithGithub": "Continue with Github"
   },
   "Common": {
     "cancel": "Cancel",
@@ -37,7 +39,10 @@
     "submit": "Submit",
     "success": "Success",
     "tryAgain": "Try again",
-    "upload": "Upload"
+    "upload": "Upload",
+    "goBack": "Go back",
+    "previousPage": "Previous page",
+    "signOutAction": "This action will log you out of your account."
   },
   "Error": {
     "generic": "Something went wrong",
@@ -166,7 +171,25 @@
       "No watermark", 
       "Priority processing",
       "Email support"
-    ]
+    ],
+    "choosePlan": "Choose Your Plan",
+    "stripePlans": "Stripe Plans",
+    "customPlans": "Custom Plans",
+    "instantAccess": "Instant Access",
+    "instantAccessDesc": "Start using all features immediately after subscription",
+    "securePayments": "Secure Payments",
+    "securePaymentsDesc": "Your payment information is protected by Stripe's security",
+    "cancelAnytime": "Cancel Anytime",
+    "cancelAnytimeDesc": "No long-term commitments. Cancel your subscription anytime",
+    "pricingSubtitle": "Select the perfect plan for your needs. All plans include our core features with different usage limits.",
+    "frequentlyAskedQuestions": "Frequently Asked Questions",
+    "faqSubtitle": "Get answers to common questions about our pricing and subscription plans.",
+    "faqWhatIncluded": "What's included in the subscription?",
+    "faqWhatIncludedAnswer": "All subscription plans include unlimited face swaps, high-quality outputs, priority processing, and email support.",
+    "faqCancelQuestion": "Can I cancel anytime?",
+    "faqCancelAnswer": "Yes, you can cancel your subscription at any time. No long-term commitments required.",
+    "faqRefundQuestion": "Do you offer refunds?",
+    "faqRefundAnswer": "We offer a 30-day money-back guarantee for all new subscriptions."
   },
   "Settings": {
     "account": "Account",
@@ -272,7 +295,12 @@
     "settings": "Settings",
     "logout": "Sign Out",
     "history": "History",
-    "noData": "No history available"
+    "noData": "No history available",
+    "member": "Member",
+    "memberCenter": "Member Center",
+    "upgradeToMember": "Upgrade to Member",
+    "activeSubscription": "Subscription Active",
+    "plan": "Plan"
   },
   "FaceSwap": {
     "mainTitle": "AI Face Swap",
@@ -313,17 +341,28 @@
     "after": "After",
     "info": {
       "validatingFile": "Validating file...",
-      "checkingAuth": "Checking authentication..."
+      "checkingAuth": "Checking authentication...",
+      "addingWatermark": "Adding watermark to image...",
+      "checkingSubscription": "Checking subscription status...",
+      "downloadStarting": "Image download started",
+      "memberNoWatermark": "Member user, downloading watermark-free image",
+      "nonMemberWatermark": "Upgrade to member to download watermark-free HD images!"
     },
     "success": {
       "imageUploaded": "Image uploaded successfully!",
-      "faceSwapComplete": "Face swap completed successfully!"
+      "faceSwapComplete": "Face swap completed successfully!",
+      "watermarkAdded": "Watermark added successfully",
+      "downloadReady": "Image ready for download"
     },
     "error": {
       "missingImages": "Please upload both images before swapping.",
       "noCreditsLeft": "No credits left, please recharge!",
       "validationFailed": "File validation failed. Please try again.",
-      "faceSwapFailed": "Face swap failed. Please try again."
+      "faceSwapFailed": "Face swap failed. Please try again.",
+      "loginRequired": "Please login before downloading the image",
+      "downloadFailed": "Download failed, please try again",
+      "watermarkFailed": "Failed to add watermark, downloading original image",
+      "subscriptionCheckFailed": "Failed to check subscription status"
     },
     "warning": {
       "creditConsumptionFailed": "Face swap completed, but failed to update credits."
@@ -339,6 +378,17 @@
       ],
       "loginButton": "Sign In Now",
       "cancelButton": "Maybe Later"
+    },
+    "pro": {
+      "title": "Unlock All AI Face Swap Features",
+      "description": "Upgrade to Pro for unlimited AI face swapping experience and premium quality service.",
+      "feature1": "Unlimited AI face swaps",
+      "feature2": "HD watermark-free output",
+      "feature3": "Priority processing queue",
+      "button": "Upgrade to Pro Now",
+      "tryNow": "Try Now",
+      "qualityAssurance": "High-quality AI algorithm guarantee",
+      "privacyProtection": "Secure privacy protection"
     }
   },
   "FaceSwapTypes": {
@@ -435,31 +485,70 @@
     }
   },
   "Dashboard": {
-    "loading": "Loading your dashboard...",
-    "welcomeBack": "Welcome Back!",
+    "loading": "Loading...",
+    "welcomeBack": "Welcome Back",
     "active": "Active",
-    "currentCredits": "Current Credits",
-    "totalRecharged": "Total Recharged",
-    "totalUsed": "Total Used",
-    "available": "Available",
     "empty": "Empty",
+    "available": "Available",
+    "currentCredits": "Current Credits",
+    "failedToLoad": "Failed to Load",
     "total": "Total",
+    "totalRecharged": "Total Recharged",
     "used": "Used",
+    "totalUsed": "Total Used",
     "accountId": "Account ID",
-    "accountIdDesc": "Your unique identifier",
-    "quickStats": "Quick Stats",
-    "quickStatsDesc": "Your usage overview",
-    "efficiencyRate": "Efficiency Rate",
-    "remaining": "Remaining",
-    "credits": "credits",
-    "copy": "Copy",
+    "accountIdDesc": "Your unique account identifier",
     "copied": "Copied",
-    "newFaceSwap": "New Face Swap",
-    "needCreditsToSwap": "Need Credits to Swap",
-    "buyMoreCredits": "Buy More Credits",
-    "creditsDepleted": "Credits Depleted",
-    "creditsDepletedDesc": "You've used all your credits! Purchase more to continue using face swap features.",
+    "copy": "Copy",
+    "quickActions": "Quick Actions",
+    "quickActionsDesc": "Quick access to common features",
+    "viewBilling": "View Billing",
+    "rechargeTitle": "Insufficient Credits",
+    "rechargeDesc": "Get more credits to continue using services",
     "rechargeNow": "Recharge Now",
-    "failedToLoad": "Failed to load"
+    "membershipStatus": "Membership Status",
+    "premiumMemberActive": "Your premium membership is active",
+    "noActiveMembership": "You are not a member yet, upgrade to enjoy more privileges",
+    "inactive": "Inactive",
+    "planType": "Plan Type",
+    "subscriptionId": "Subscription ID",
+    "memberSince": "Member Since",
+    "memberBenefits": "Member Benefits",
+    "benefit1": "More credit bonuses",
+    "benefit2": "Priority customer support",
+    "benefit3": "Exclusive feature access",
+    "manageMembership": "Manage Membership",
+    "upgradeToPremium": "Upgrade to Premium",
+    "premiumMember": "Premium Member",
+    "pleaseLogin": "Please Login",
+    "login": "Login",
+    "user": "User",
+    "dashboardSubtitle": "Manage your account and view usage",
+    "membershipStatusDesc": "View your membership status and privileges",
+    "currentBalance": "Current Balance",
+    "totalConsumed": "Total Consumed",
+    "credits": "Credits",
+    "faceSwap": "Face Swap",
+    "faceSwapDesc": "Start using AI face swapping",
+    "recharge": "Recharge Credits",
+    "rechargeDesc": "Purchase more credits",
+    "billing": "Billing Management",
+    "billingDesc": "View subscriptions and billing",
+    "help": "Help Documentation",
+    "helpDesc": "View usage help"
+  },
+  "PaymentSuccess": {
+    "paymentSuccess": "Payment Successful!",
+    "membershipActivated": "Membership Activated",
+    "paymentProcessed": "Your payment has been successfully processed and membership privileges are now active!",
+    "creditsNote": "Credits will be automatically added to your account within a few minutes",
+    "memberBenefits": "Member Benefits",
+    "benefit1": "More credit bonuses",
+    "benefit2": "Priority customer support", 
+    "benefit3": "Exclusive feature access",
+    "viewDashboard": "View Dashboard",
+    "manageMembership": "Manage Membership",
+    "thankYou": "Thank you for choosing our service!",
+    "startUsing": "Start Using AI Face Swap"
   }
 } 

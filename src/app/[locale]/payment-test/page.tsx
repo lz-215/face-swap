@@ -2,11 +2,17 @@
 
 import { useState } from "react";
 
-import { PaymentModal } from "~/ui/components/payment/payment-modal";
-import { SubscriptionModal } from "~/ui/components/payment/subscription-modal";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/ui/primitives/card";
-import { Input } from "~/ui/primitives/input";
-import { Label } from "~/ui/primitives/label";
+import { PaymentModal } from "~/components/payment/payment-modal";
+import { SubscriptionModal } from "~/components/payment/subscription-modal";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
 
 // 订阅计划配置
 const subscriptionPlans = [
@@ -80,9 +86,7 @@ export default function PaymentTestPage() {
   return (
     <div className="container mx-auto max-w-4xl py-8">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-foreground">
-          Stripe 支付测试
-        </h1>
+        <h1 className="text-3xl font-bold text-foreground">Stripe 支付测试</h1>
         <p className="mt-2 text-muted-foreground">
           使用测试卡号进行支付测试 - 支持一次性支付和订阅支付
         </p>
@@ -94,12 +98,13 @@ export default function PaymentTestPage() {
           <div
             className={`
               rounded-md p-4 text-sm
-              ${messageType === "success"
-                ? `
+              ${
+                messageType === "success"
+                  ? `
                   bg-green-50 text-green-700
                   dark:bg-green-900/20 dark:text-green-400
                 `
-                : `
+                  : `
                   bg-red-50 text-red-700
                   dark:bg-red-900/20 dark:text-red-400
                 `
@@ -118,10 +123,12 @@ export default function PaymentTestPage() {
             <CardTitle>测试卡信息</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <div className={`
+            <div
+              className={`
               grid grid-cols-1 gap-2 text-sm
               md:grid-cols-2
-            `}>
+            `}
+            >
               <div>
                 <strong>成功支付:</strong> 4242 4242 4242 4242
               </div>
@@ -182,10 +189,12 @@ export default function PaymentTestPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className={`
+            <div
+              className={`
               grid gap-4
               md:grid-cols-3
-            `}>
+            `}
+            >
               {subscriptionPlans.map((plan) => (
                 <div
                   className={`
@@ -198,15 +207,22 @@ export default function PaymentTestPage() {
                     <h3 className="text-lg font-semibold">{plan.name}</h3>
                     <div className="mt-2 text-2xl font-bold text-primary">
                       {plan.price}
-                      <span className={`
+                      <span
+                        className={`
                         text-sm font-normal text-muted-foreground
-                      `}>/{plan.interval}</span>
+                      `}
+                      >
+                        /{plan.interval}
+                      </span>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     {plan.features.map((feature, index) => (
-                      <div className="flex items-center gap-2 text-sm" key={index}>
+                      <div
+                        className="flex items-center gap-2 text-sm"
+                        key={index}
+                      >
                         <div className="h-1.5 w-1.5 rounded-full bg-primary" />
                         {feature}
                       </div>

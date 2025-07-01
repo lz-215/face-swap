@@ -47,7 +47,7 @@ async function main() {
     }
   }
 
-  console.log("âˆš Ensured better-auth tables:", tableNames);
+  console.log("âˆ?Ensured better-auth tables:", tableNames);
 
   for (const tableName of tableNames) {
     s.replace(

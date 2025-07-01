@@ -1,269 +1,181 @@
 "use client";
 
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "~/ui/primitives/card";
-import { Button } from "~/ui/primitives/button";
-import { Badge } from "~/ui/primitives/badge";
-import { Check, Flame, Info, Zap, Coins, X, Plus } from "lucide-react";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
-
-const creditPackages = [
-  { credits: 400, price: 4.99, rate: 80, label: null, highlight: false },
-  { credits: 1000, price: 8.99, rate: 110, label: "30% OFF", highlight: true },
-  {
-    credits: 5000,
-    price: 39.99,
-    rate: 125,
-    label: "40% OFF",
-    highlight: false,
-  },
-  {
-    credits: 30000,
-    price: 199.99,
-    rate: 150,
-    label: "50% OFF",
-    highlight: false,
-  },
-];
-
-const vidmageFeatures = [
-  { text: "Lower Cost", desc: "From $0.0063 per second", strong: true },
-  {
-    text: "No Watermark",
-    desc: "Always watermark-free, even in free trial",
-    strong: true,
-  },
-  {
-    text: "Superior Facial Clarity",
-    desc: "Clearer, more detailed facial features",
-    strong: true,
-  },
-  {
-    text: "Original Resolution Preserved",
-    desc: "No quality loss from your source media",
-    strong: true,
-  },
-  {
-    text: "No-Registration Free Trial",
-    desc: "Start using immediately without signup",
-    strong: true,
-  },
-  {
-    text: "Web+Mac Unified Account",
-    desc: "One account for Web & Mac versions",
-    strong: true,
-  },
-  { divider: true },
-  { group: "Mac Version" },
-  {
-    text: "Local Processing",
-    desc: "100% local with complete privacy",
-    strong: true,
-  },
-  { text: "Real-time Preview", desc: "Face swap as video plays" },
-  { text: "Facial Feature Swap", desc: "Partial face replacement options" },
-  {
-    text: "Live Face Swap",
-    desc: "Face swap for video calls and live streaming",
-  },
-  {
-    text: "Multi-Format Video Support",
-    desc: "Compatible with all major video formats",
-  },
-  { text: "No Limits", desc: "No file size or resolution restrictions" },
-];
-
-const otherToolFeatures = [
-  { text: "Higher Cost", desc: "$0.01 - $0.05 per second", strong: true },
-  {
-    text: "Has Watermark",
-    desc: "Free trial outputs contain visible watermarks",
-    strong: true,
-  },
-  {
-    text: "Poor Facial Clarity",
-    desc: "Blurry, less defined facial details",
-    strong: true,
-  },
-  {
-    text: "Reduced Output Resolution",
-    desc: "Lower quality than original media",
-    strong: true,
-  },
-  {
-    text: "Registration-Required Trial",
-    desc: "Signup needed before trying",
-    strong: true,
-  },
-  {
-    text: "Single-Platform Only",
-    desc: "Supports only one platform (Web or Mac)",
-    strong: true,
-  },
-  { divider: true },
-  { group: "Mac Version" },
-  { text: "Cloud Processing", desc: "Requires uploading to servers" },
-  { text: "Slow Processing", desc: "Long wait times, no live preview" },
-  { text: "Full Face Only", desc: "No partial face replacement options" },
-  { text: "No Live Support", desc: "Can not use for video calls or streaming" },
-  {
-    text: "Limited Video Format Support",
-    desc: "Only works with specific video types",
-  },
-  { text: "Strict Limits", desc: "File size and duration restrictions" },
-];
-
-const faqs = [
-  "What is VidMage?",
-  "What file formats does VidMage support?",
-  "Is VidMage free to use?",
-  "How does VidMage ensure privacy and security?",
-  "How does VidMage for Mac compare to web-based face-swapping tools?",
-  "What are the benefits of using VidMage on Mac?",
-  "Does VidMage support multiple face swaps in a single image?",
-  "Is there a limit to video length or file size in VidMage?",
-  "Does VidMage support high-resolution exports like 4K?",
-  "How does VidMage ensure accuracy and detail in face-swapping?",
-  "Can VidMage handle low-quality or challenging videos?",
-  "How can I achieve the best face-swapping effect with VidMage?",
-  "Does VidMage add watermarks to face-swapped images or videos?",
-];
+import { StripePricingTable } from "~/components/payment/stripe-pricing-table";
 
 export default function PricingPage() {
   const t = useTranslations("Payment");
-  const tPage = useTranslations("PricingPage");
-  const monthlyFeatures = t.raw("monthlyPlanFeatures") as string[];
-  const yearlyFeatures = t.raw("yearlyPlanFeatures") as string[];
-  const plans = [
-    {
-      name: t("monthly", { defaultMessage: "Monthly Plan" }),
-      price: "$16.90",
-      oldPrice: undefined,
-      description: t("monthlyPlanDesc"),
-      features: monthlyFeatures,
-      action: {
-        label: t("subscribe", { defaultMessage: "Subscribe" }),
-        variant: "default" as const,
-      },
-      badge: undefined,
-    },
-    {
-      name: t("yearly", { defaultMessage: "Yearly Plan" }),
-      price: "$9.90",
-      oldPrice: "$16.90",
-      description: t("yearlyPlanDesc"),
-      features: yearlyFeatures,
-      action: {
-        label: t("subscribe", { defaultMessage: "Subscribe" }),
-        variant: "default" as const,
-      },
-      badge: "SAVE 42%",
-      promo: undefined,
-      promoDesc: undefined,
-    },
-  ];
-
-  const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background py-12 px-4">
-      <h1 className="mb-2 text-4xl font-bold text-foreground text-center">
-        {tPage("choosePlan")}
-      </h1>
-      <p className="mb-10 text-lg text-muted-foreground text-center max-w-2xl">
-        {tPage("subtitle")}
-      </p>
-      <div className="flex flex-col lg:flex-row gap-8 w-full max-w-7xl justify-center items-stretch">
-        {plans.map((plan, idx) => {
-          const isSelected = selectedPlan === idx;
-          return (
-            <Card
-              key={plan.name}
-              onClick={() => setSelectedPlan(idx)}
-              className={`flex-1 max-w-md mx-auto border-2 cursor-pointer transition-all duration-200
-                ${
-                  isSelected
-                    ? "border-primary shadow-[0_0_24px_2px_var(--primary)]"
-                    : "border-border"
-                }
-                bg-card text-foreground relative`}
-            >
-              {plan.badge && isSelected && (
-                <Badge className="absolute left-4 top-4 z-10 bg-primary text-primary-foreground">
-                  {plan.badge}
-                </Badge>
-              )}
-              {plan.badge && isSelected && (
-                <div className="absolute right-4 top-4 z-10 bg-primary text-primary-foreground px-3 py-1 rounded-full font-bold text-xs">
-                  {plan.badge}
-                </div>
-              )}
-              <CardHeader className="items-center text-center">
-                <CardTitle className="text-3xl font-bold mb-2 bg-primary rounded-full text-primary-foreground px-4 py-2">
-                  {plan.name}
-                </CardTitle>
-                <div className="flex items-end gap-2 mb-2">
-                  <span className="text-4xl font-extrabold">{plan.price}</span>
-                  {plan.oldPrice && (
-                    <span className="line-through text-muted-foreground text-lg">
-                      {plan.oldPrice}
-                    </span>
-                  )}
-                  <span className="text-base text-muted-foreground">
-                    /month
-                  </span>
-                </div>
-              </CardHeader>
-              <CardContent className="px-6">
-                <ul className="space-y-2">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-2 text-sm">
-                      <Check className="text-primary w-4 h-4" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-              <CardFooter className="flex flex-col items-center mt-4">
-                <Button
-                  className={`w-full py-2 text-lg font-bold ${
-                    isSelected
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                      : ""
-                  }`}
-                  variant={plan.action.variant}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (idx === 0) {
-                      // Monthly Plan (第一个计划)
-                      window.open(
-                        "https://buy.stripe.com/4gM4gB7Jy7ak5DWfYm43S00",
-                        "_blank"
-                      );
-                    } else if (idx === 1) {
-                      // Yearly Plan (第二个计划)
-                      window.open(
-                        "https://buy.stripe.com/eVq4gBfc02U4d6oh2q43S01",
-                        "_blank"
-                      );
-                    }
-                  }}
+      <div className="w-full max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="mb-4 text-4xl font-bold text-foreground">
+            {t("choosePlan", { defaultMessage: "Choose Your Plan" })}
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            {t("pricingSubtitle", {
+              defaultMessage:
+                "Select the perfect plan for your needs. All plans include our core features with different usage limits.",
+            })}
+          </p>
+        </div>
+
+        {/* Stripe 定价表组件 */}
+        <div className="flex justify-center">
+          <StripePricingTable
+            className="w-full max-w-5xl"
+            pricingTableId="prctbl_1RfcfrP9YNEyAXtbdnk9VKvw"
+            publishableKey="pk_test_51RR7rMP9YNEyAXtb8NSf2BNWkL0qepSqdJKuTNMNrSJoGOVoRjeuqTh2HoRDUCaMiuuhAaoB3WkjUNNHczHmezrA00BXOxxszr"
+          />
+        </div>
+
+        {/* 功能介绍部分 */}
+        <div className="mt-16 text-center">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="flex flex-col items-center p-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <svg
+                  className="w-6 h-6 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  {isSelected
-                    ? t("tryNow", { defaultMessage: "Try now" })
-                    : plan.action.label}
-                </Button>
-              </CardFooter>
-            </Card>
-          );
-        })}
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">
+                {t("instantAccess", { defaultMessage: "Instant Access" })}
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                {t("instantAccessDesc", {
+                  defaultMessage:
+                    "Start using all features immediately after subscription",
+                })}
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center p-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <svg
+                  className="w-6 h-6 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">
+                {t("securePayments", { defaultMessage: "Secure Payments" })}
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                {t("securePaymentsDesc", {
+                  defaultMessage:
+                    "Your payment information is protected by Stripe's security",
+                })}
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center p-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <svg
+                  className="w-6 h-6 text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.5a9.5 9.5 0 100 19 9.5 9.5 0 000-19z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">
+                {t("cancelAnytime", { defaultMessage: "Cancel Anytime" })}
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                {t("cancelAnytimeDesc", {
+                  defaultMessage:
+                    "No long-term commitments. Cancel your subscription anytime",
+                })}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 常见问题部分 */}
+        <div className="mt-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-foreground mb-4">
+              {t("frequentlyAskedQuestions", {
+                defaultMessage: "Frequently Asked Questions",
+              })}
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              {t("faqSubtitle", {
+                defaultMessage:
+                  "Get answers to common questions about our pricing and subscription plans.",
+              })}
+            </p>
+          </div>
+
+          <div className="max-w-3xl mx-auto space-y-4">
+            <div className="border rounded-lg p-6">
+              <h3 className="font-semibold mb-2">
+                {t("faqWhatIncluded", {
+                  defaultMessage: "What's included in the subscription?",
+                })}
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                {t("faqWhatIncludedAnswer", {
+                  defaultMessage:
+                    "All subscription plans include unlimited face swaps, high-quality outputs, priority processing, and email support.",
+                })}
+              </p>
+            </div>
+
+            <div className="border rounded-lg p-6">
+              <h3 className="font-semibold mb-2">
+                {t("faqCancelQuestion", {
+                  defaultMessage: "Can I cancel anytime?",
+                })}
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                {t("faqCancelAnswer", {
+                  defaultMessage:
+                    "Yes, you can cancel your subscription at any time. No long-term commitments required.",
+                })}
+              </p>
+            </div>
+
+            <div className="border rounded-lg p-6">
+              <h3 className="font-semibold mb-2">
+                {t("faqRefundQuestion", {
+                  defaultMessage: "Do you offer refunds?",
+                })}
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                {t("faqRefundAnswer", {
+                  defaultMessage:
+                    "We offer a 30-day money-back guarantee for all new subscriptions.",
+                })}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

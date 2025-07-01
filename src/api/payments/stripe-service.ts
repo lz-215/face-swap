@@ -10,8 +10,7 @@ import { userTable } from "~/db/schema/users/tables";
 import { stripe } from "~/lib/stripe";
 
 /**
- * 创建新客户
- */
+ * 创建新客户 */
 export async function createCustomer(
   userId: string,
   email: string,
@@ -44,7 +43,7 @@ export async function createCustomer(
 /**
  * 创建客户门户会话
  */
-export async function createCustomerPortalSession(
+async function createCustomerPortalSession(
   customerId: string,
 ): Promise<null | string> {
   try {
@@ -63,7 +62,7 @@ export async function createCustomerPortalSession(
 /**
  * 获取结账 URL
  */
-export async function getCheckoutUrl(
+async function getCheckoutUrl(
   userId: string,
   priceId: string,
 ): Promise<null | string> {
@@ -117,7 +116,7 @@ export async function getCheckoutUrl(
 }
 
 /**
- * 获取用户的 Stripe 客户信息
+ * 获取用户Stripe 客户信息
  */
 export async function getCustomerByUserId(userId: string) {
   const customer = await db.query.stripeCustomerTable.findFirst({
@@ -134,7 +133,7 @@ export async function getCustomerByUserId(userId: string) {
 /**
  * 获取客户详情
  */
-export async function getCustomerDetails(userId: string) {
+async function getCustomerDetails(userId: string) {
   const customer = await getCustomerByUserId(userId);
 
   if (!customer) {
@@ -153,8 +152,7 @@ export async function getCustomerDetails(userId: string) {
 }
 
 /**
- * 获取用户所有订阅
- */
+ * 获取用户所有订阅 */
 export async function getUserSubscriptions(userId: string) {
   const subscriptions = await db.query.stripeSubscriptionTable.findMany({
     where: eq(stripeSubscriptionTable.userId, userId),
@@ -166,9 +164,9 @@ export async function getUserSubscriptions(userId: string) {
 /**
  * 检查用户是否有有效订阅
  */
-export async function hasActiveSubscription(userId: string): Promise<boolean> {
+async function hasActiveSubscription(userId: string): Promise<boolean> {
   const subscriptions = await getUserSubscriptions(userId);
-  return subscriptions.some((sub) => sub.status === "active");
+  return subscriptions.some((sub: typeof stripeSubscriptionTable.$inferSelect) => sub.status === "active");
 }
 
 /**

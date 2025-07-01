@@ -7,10 +7,10 @@ import { useEffect, useState } from "react";
 
 import type { PolarSubscription } from "~/db/schema/payments/types";
 
-import { PaymentForm } from "~/ui/components/payments/PaymentForm";
-import { Alert, AlertDescription, AlertTitle } from "~/ui/primitives/alert";
-import { Badge } from "~/ui/primitives/badge";
-import { Button } from "~/ui/primitives/button";
+import { PaymentForm } from "~/components/payments/PaymentForm";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
@@ -18,8 +18,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "~/ui/primitives/card";
-import { Skeleton } from "~/ui/primitives/skeleton";
+} from "~/components/ui/card";
+import { Skeleton } from "~/components/ui/skeleton";
 
 interface BillingPageClientProps {
   user: null | User;
@@ -83,7 +83,7 @@ export function BillingPageClient({ user }: BillingPageClientProps) {
   }, [user, router]);
 
   const hasActiveSubscription = subscriptions.some(
-    (sub) => sub.status === "active",
+    (sub) => sub.status === "active"
   );
 
   useEffect(() => {

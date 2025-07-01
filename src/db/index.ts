@@ -7,7 +7,7 @@ import { DB_DEV_LOGGER } from "~/app";
 import * as schema from "./schema";
 
 // 优先使用 `DATABASE_URL`，若不存在则尝试使用 Supabase CLI 在本地或部署环境中常见的
-// `SUPABASE_DB_URL`。这样在忘记手动设置 `DATABASE_URL` 时也不会因 `throw` 导致整条 API
+// `SUPABASE_DB_URL`。这样在忘记手动设置 `DATABASE_URL` 时也不会让 `throw` 导致整条 API
 // 直接 500，而是留出更友好的容错空间。
 //
 // 在生产环境我们依然强制要求有效的数据库连接字符串，以避免意外使用到空连接。

@@ -1,3 +1,4 @@
+﻿// THIS IS A COMMENT TO FORCE THE FILE TO BE RE-SAVED
 export interface FileValidationOptions {
   allowedTypes?: string[];
   maxSize?: number;
@@ -21,7 +22,7 @@ export interface ValidationResult {
   };
 }
 
-// 默认配置
+// 榛樿閰嶇疆
 const DEFAULT_OPTIONS: Required<FileValidationOptions> = {
   allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
   maxSize: 10 * 1024 * 1024, // 10MB
@@ -32,7 +33,7 @@ const DEFAULT_OPTIONS: Required<FileValidationOptions> = {
   requireFaceDetection: false,
 };
 
-// 验证文件类型
+// 楠岃瘉鏂囦欢绫诲瀷
 export function validateFileType(file: File, allowedTypes: string[]): ValidationResult {
   if (!allowedTypes.includes(file.type)) {
     return {
@@ -43,7 +44,7 @@ export function validateFileType(file: File, allowedTypes: string[]): Validation
   return { isValid: true };
 }
 
-// 验证文件大小
+// 楠岃瘉鏂囦欢澶у皬
 export function validateFileSize(file: File, maxSize: number): ValidationResult {
   if (file.size > maxSize) {
     const maxSizeMB = (maxSize / (1024 * 1024)).toFixed(1);
@@ -56,7 +57,7 @@ export function validateFileSize(file: File, maxSize: number): ValidationResult 
   return { isValid: true };
 }
 
-// 验证图片尺寸
+// 楠岃瘉鍥剧墖灏哄
 export async function validateImageDimensions(
   file: File,
   options: {
@@ -76,7 +77,7 @@ export async function validateImageDimensions(
       const { width, height } = img;
       const warnings: string[] = [];
       
-      // 检查最小尺寸
+      // 妫€鏌ユ渶灏忓昂瀵?
       if (options.minWidth && width < options.minWidth) {
         return resolve({
           isValid: false,
@@ -91,7 +92,7 @@ export async function validateImageDimensions(
         });
       }
       
-      // 检查最大尺寸
+      // 妫€鏌ユ渶澶у昂瀵?
       if (options.maxWidth && width > options.maxWidth) {
         return resolve({
           isValid: false,
@@ -106,7 +107,7 @@ export async function validateImageDimensions(
         });
       }
 
-      // 添加建议性警告
+      // 娣诲姞寤鸿鎬ц鍛?
       if (width < 512 || height < 512) {
         warnings.push('Low resolution image may result in poor quality output');
       }
@@ -134,13 +135,13 @@ export async function validateImageDimensions(
   });
 }
 
-// 验证图片内容安全性
+// 楠岃瘉鍥剧墖鍐呭瀹夊叏鎬?
 export async function validateImageContent(file: File): Promise<ValidationResult> {
-  // 基本的文件头验证
+  // 鍩烘湰鐨勬枃浠跺ご楠岃瘉
   const buffer = await file.arrayBuffer();
   const bytes = new Uint8Array(buffer);
   
-  // 检查常见图片格式的文件头
+  // 妫€鏌ュ父瑙佸浘鐗囨牸寮忕殑鏂囦欢澶?
   const isPNG = bytes.length >= 8 && 
     bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47;
   
@@ -161,7 +162,7 @@ export async function validateImageContent(file: File): Promise<ValidationResult
   return { isValid: true };
 }
 
-// 简单的人脸检测验证（基于Canvas API）
+// 绠€鍗曠殑浜鸿劯妫€娴嬮獙璇侊紙鍩轰簬Canvas API锛?
 export async function validateFacePresence(file: File): Promise<ValidationResult> {
   return new Promise((resolve) => {
     const img = new Image();
@@ -185,20 +186,20 @@ export async function validateFacePresence(file: File): Promise<ValidationResult
       ctx.drawImage(img, 0, 0);
       
       try {
-        // 简单的颜色分析来估计是否包含人脸
+        // 绠€鍗曠殑棰滆壊鍒嗘瀽鏉ヤ及璁℃槸鍚﹀寘鍚汉鑴?
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imageData.data;
         
         let skinPixels = 0;
         const totalPixels = data.length / 4;
         
-        // 简单的肤色检测算法
+        // 绠€鍗曠殑鑲よ壊妫€娴嬬畻娉?
         for (let i = 0; i < data.length; i += 4) {
           const r = data[i];
           const g = data[i + 1];
           const b = data[i + 2];
           
-          // 简单的肤色范围检测
+          // 绠€鍗曠殑鑲よ壊鑼冨洿妫€鏌?
           if (
             r > 95 && g > 40 && b > 20 &&
             r > g && r > b &&
@@ -247,62 +248,65 @@ export async function validateFacePresence(file: File): Promise<ValidationResult
   });
 }
 
-// 主要的文件验证函数
+// 涓昏鐨勬枃浠堕獙璇佸嚱鏁?
 export async function validateFile(
   file: File,
   options: FileValidationOptions = {}
 ): Promise<ValidationResult> {
-  const config = { ...DEFAULT_OPTIONS, ...options };
-  const warnings: string[] = [];
-  
-  // 基本验证
-  const typeResult = validateFileType(file, config.allowedTypes);
-  if (!typeResult.isValid) return typeResult;
-  
-  const sizeResult = validateFileSize(file, config.maxSize);
-  if (!sizeResult.isValid) return sizeResult;
-  
-  // 内容验证
-  const contentResult = await validateImageContent(file);
-  if (!contentResult.isValid) return contentResult;
-  
-  // 尺寸验证
-  const dimensionsResult = await validateImageDimensions(file, {
-    minWidth: config.minWidth,
-    minHeight: config.minHeight,
-    maxWidth: config.maxWidth,
-    maxHeight: config.maxHeight,
-  });
-  if (!dimensionsResult.isValid) return dimensionsResult;
-  
-  if (dimensionsResult.warnings) {
-    warnings.push(...dimensionsResult.warnings);
+  const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
+
+  const validationSteps = [
+    () => validateFileType(file, mergedOptions.allowedTypes),
+    () => validateFileSize(file, mergedOptions.maxSize),
+    () => validateImageContent(file),
+    () => validateImageDimensions(file, {
+        minWidth: mergedOptions.minWidth,
+        minHeight: mergedOptions.minHeight,
+        maxWidth: mergedOptions.maxWidth,
+        maxHeight: mergedOptions.maxHeight,
+    }),
+  ];
+
+  if (mergedOptions.requireFaceDetection) {
+    validationSteps.push(() => validateFacePresence(file));
   }
-  
-  // 人脸检测（可选）
-  if (config.requireFaceDetection) {
-    const faceResult = await validateFacePresence(file);
-    if (!faceResult.isValid) return faceResult;
+
+  const allWarnings = new Set<string>();
+  let finalMetadata: ValidationResult['metadata'] | undefined;
+
+  for (const step of validationSteps) {
+    const result = await step();
     
-    if (faceResult.warnings) {
-      warnings.push(...faceResult.warnings);
+    if (result.warnings) {
+      result.warnings.forEach(w => allWarnings.add(w));
+    }
+    
+    if (result.metadata) {
+      finalMetadata = { ...finalMetadata, ...result.metadata };
+    }
+
+    if (!result.isValid) {
+      return { 
+        ...result,
+        warnings: Array.from(allWarnings),
+        metadata: finalMetadata,
+      };
     }
   }
-  
-  return {
+
+  return { 
     isValid: true,
-    warnings: warnings.length > 0 ? warnings : undefined,
-    metadata: dimensionsResult.metadata,
+    warnings: Array.from(allWarnings),
+    metadata: finalMetadata,
   };
 }
 
-// 专门用于人脸交换的验证配置
+// 涓篎ace Swap椤甸潰瀹氬埗鐨勯獙璇侀€夐」
 export const FACE_SWAP_VALIDATION_OPTIONS: FileValidationOptions = {
-  allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
-  maxSize: 10 * 1024 * 1024, // 10MB
-  minWidth: 256,
-  minHeight: 256,
-  maxWidth: 2048,
-  maxHeight: 2048,
-  requireFaceDetection: true,
+    allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
+    maxSize: 15 * 1024 * 1024, // 15MB
+    minWidth: 256,
+    minHeight: 256,
+    maxWidth: 8192,
+    maxHeight: 8192,
 }; 

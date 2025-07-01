@@ -1,7 +1,9 @@
 import { createId } from "@paralleldrive/cuid2";
 import { and, eq, sql } from "drizzle-orm";
-
+import type { PgTransaction } from "drizzle-orm/pg-core";
+import type { PostgresJsQueryResultHKT } from "drizzle-orm/postgres-js";
 import { db } from "~/db";
+import type * as schema from "~/db/schema";
 import {
   creditConsumptionConfigTable,
   creditPackageTable,
@@ -12,14 +14,256 @@ import {
 import { stripe } from "~/lib/stripe";
 
 /**
- * 添加奖励积分
+ * 改进版积分服务 - 解决事务安全和并发问题
+ */
+
+type DbTransaction = PgTransaction<PostgresJsQueryResultHKT, typeof schema>;
+
+/**
+ * 安全的积分消费函数（使用数据库事务和锁）
+ * @param userId 用户ID
+ * @param actionType 操作类型
+ * @param uploadId 上传ID（可选）
+ * @param description 描述（可选）
+ * @returns 消费结果
+ */
+export async function consumeCreditsWithTransaction(
+  userId: string,
+  actionType: string,
+  uploadId?: string,
+  description?: string,
+) {
+  return await db.transaction(async (tx: DbTransaction) => {
+    try {
+      // 1. 获取操作所需积分配置
+      const config = await tx.query.creditConsumptionConfigTable.findFirst({
+        where: and(
+          eq(creditConsumptionConfigTable.actionType, actionType),
+          eq(creditConsumptionConfigTable.isActive, 1),
+        ),
+      });
+
+      const creditsRequired = config?.creditsRequired || 1;
+
+      // 2. 锁定用户积分记录（SELECT FOR UPDATE）
+      const userBalance = await tx
+        .select()
+        .from(userCreditBalanceTable)
+        .where(eq(userCreditBalanceTable.userId, userId))
+        .for("update")
+        .limit(1);
+
+      if (userBalance.length === 0) {
+        // 创建新用户积分记录
+        const newBalance = await tx
+          .insert(userCreditBalanceTable)
+          .values({
+            balance: 0,
+            createdAt: new Date(),
+            id: createId(),
+            totalConsumed: 0,
+            totalRecharged: 0,
+            updatedAt: new Date(),
+            userId,
+          })
+          .returning();
+        
+        return {
+          success: false,
+          message: "积分不足",
+          balance: 0,
+          required: creditsRequired,
+        };
+      }
+
+      const currentBalance = userBalance[0];
+
+      // 3. 检查积分是否充足
+      if (currentBalance.balance < creditsRequired) {
+        return {
+          success: false,
+          message: "积分不足",
+          balance: currentBalance.balance,
+          required: creditsRequired,
+        };
+      }
+
+      // 4. 更新用户积分余额
+      const newBalance = currentBalance.balance - creditsRequired;
+      const newTotalConsumed = currentBalance.totalConsumed + creditsRequired;
+
+      await tx
+        .update(userCreditBalanceTable)
+        .set({
+          balance: newBalance,
+          totalConsumed: newTotalConsumed,
+          updatedAt: new Date(),
+        })
+        .where(eq(userCreditBalanceTable.id, currentBalance.id));
+
+      // 5. 创建积分交易记录
+      const transactionDescription = description || `${actionType} 消费${creditsRequired}积分`;
+      const transactionId = createId();
+
+      await tx.insert(creditTransactionTable).values({
+        amount: -creditsRequired,
+        balanceAfter: newBalance,
+        createdAt: new Date(),
+        description: transactionDescription,
+        id: transactionId,
+        metadata: JSON.stringify({
+          actionType,
+          uploadId,
+          creditsRequired,
+        }),
+        relatedUploadId: uploadId,
+        type: "consumption",
+        userId,
+      });
+
+      return {
+        success: true,
+        balance: newBalance,
+        consumed: creditsRequired,
+        transactionId,
+      };
+    } catch (error) {
+      console.error("积分消费事务失败:", error);
+      throw error;
+    }
+  });
+}
+
+/**
+ * 安全的积分充值处理函数（使用数据库事务）
+ * @param rechargeId 充值记录ID
+ * @param paymentIntentId 支付意图ID
+ * @returns 处理结果
+ */
+export async function handleCreditRechargeWithTransaction(
+  rechargeId: string,
+  paymentIntentId: string,
+) {
+  return await db.transaction(async (tx: DbTransaction) => {
+    try {
+      // 1. 获取充值记录并锁定
+      const recharge = await tx
+        .select()
+        .from(creditRechargeTable)
+        .where(
+          and(
+            eq(creditRechargeTable.id, rechargeId),
+            eq(creditRechargeTable.paymentIntentId, paymentIntentId),
+          ),
+        )
+        .for("update")
+        .limit(1);
+
+      if (recharge.length === 0) {
+        throw new Error("充值记录不存在");
+      }
+
+      const rechargeRecord = recharge[0];
+
+      // 2. 检查是否已经处理过（防止重复处理）
+      if (rechargeRecord.status === "completed") {
+        console.log(`充值记录 ${rechargeId} 已经处理过，跳过重复处理`);
+        return { recharge: rechargeRecord, success: true, duplicate: true };
+      }
+
+      // 3. 更新充值记录状态
+      await tx
+        .update(creditRechargeTable)
+        .set({
+          status: "completed",
+          updatedAt: new Date(),
+        })
+        .where(eq(creditRechargeTable.id, rechargeId));
+
+      // 4. 获取或创建用户积分余额记录并锁定
+      let userBalance = await tx
+        .select()
+        .from(userCreditBalanceTable)
+        .where(eq(userCreditBalanceTable.userId, rechargeRecord.userId))
+        .for("update")
+        .limit(1);
+
+      if (userBalance.length === 0) {
+        // 创建新的积分余额记录
+        const newBalance = await tx
+          .insert(userCreditBalanceTable)
+          .values({
+            balance: rechargeRecord.amount,
+            createdAt: new Date(),
+            id: createId(),
+            totalConsumed: 0,
+            totalRecharged: rechargeRecord.amount,
+            updatedAt: new Date(),
+            userId: rechargeRecord.userId,
+          })
+          .returning();
+
+        userBalance = newBalance;
+      } else {
+        // 更新现有积分余额
+        const currentBalance = userBalance[0];
+        const newBalance = currentBalance.balance + rechargeRecord.amount;
+        const newTotalRecharged = currentBalance.totalRecharged + rechargeRecord.amount;
+
+        await tx
+          .update(userCreditBalanceTable)
+          .set({
+            balance: newBalance,
+            totalRecharged: newTotalRecharged,
+            updatedAt: new Date(),
+          })
+          .where(eq(userCreditBalanceTable.id, currentBalance.id));
+
+        userBalance[0].balance = newBalance;
+        userBalance[0].totalRecharged = newTotalRecharged;
+      }
+
+      // 5. 创建积分交易记录
+      const transactionId = createId();
+      await tx.insert(creditTransactionTable).values({
+        amount: rechargeRecord.amount,
+        balanceAfter: userBalance[0].balance,
+        createdAt: new Date(),
+        description: `充值${rechargeRecord.amount}积分`,
+        id: transactionId,
+        metadata: JSON.stringify({
+          currency: rechargeRecord.currency,
+          paymentIntentId,
+          price: rechargeRecord.price,
+          rechargeId,
+        }),
+        relatedRechargeId: rechargeId,
+        type: "recharge",
+        userId: rechargeRecord.userId,
+      });
+
+      return {
+        success: true,
+        recharge: rechargeRecord,
+        newBalance: userBalance[0].balance,
+        transactionId,
+      };
+    } catch (error) {
+      console.error("积分充值事务失败:", error);
+      throw error;
+    }
+  });
+}
+
+/**
+ * 安全的奖励积分添加函数
  * @param userId 用户ID
  * @param amount 积分数量
  * @param reason 奖励原因
  * @param metadata 元数据
  * @returns 奖励结果
  */
-export async function addBonusCredits(
+export async function addBonusCreditsWithTransaction(
   userId: string,
   amount: number,
   reason: string,
@@ -33,55 +277,56 @@ export async function addBonusCredits(
     throw new Error(error);
   }
 
-  try {
-    // 使用数据库事务确保数据一致性
-    const result = await db.transaction(async (tx) => {
-      console.log(`[addBonusCredits] 开始数据库事务`);
-      
-      // 1. 获取或创建用户积分余额
-      let userBalance = await tx.query.userCreditBalanceTable.findFirst({
-        where: eq(userCreditBalanceTable.userId, userId),
-      });
+  return await db.transaction(async (tx: DbTransaction) => {
+    try {
+      // 1. 获取或创建用户积分余额记录并锁定
+      let userBalance = await tx
+        .select()
+        .from(userCreditBalanceTable)
+        .where(eq(userCreditBalanceTable.userId, userId))
+        .for("update")
+        .limit(1);
 
-      if (!userBalance) {
-        console.log(`[addBonusCredits] 用户 ${userId} 积分余额不存在，正在创建`);
-        const newBalanceResult = await tx
+      if (userBalance.length === 0) {
+        // 创建新的积分余额记录
+        const newBalance = await tx
           .insert(userCreditBalanceTable)
           .values({
-            balance: 0,
+            balance: amount,
             createdAt: new Date(),
             id: createId(),
             totalConsumed: 0,
-            totalRecharged: 0,
+            totalRecharged: amount,
             updatedAt: new Date(),
             userId,
           })
           .returning();
-        
-        userBalance = newBalanceResult[0];
-        console.log(`[addBonusCredits] 创建用户积分余额成功: ${userBalance.id}`);
+
+        userBalance = newBalance;
+      } else {
+        // 更新现有积分余额
+        const currentBalance = userBalance[0];
+        const newBalance = currentBalance.balance + amount;
+        const newTotalRecharged = currentBalance.totalRecharged + amount;
+
+        await tx
+          .update(userCreditBalanceTable)
+          .set({
+            balance: newBalance,
+            totalRecharged: newTotalRecharged,
+            updatedAt: new Date(),
+          })
+          .where(eq(userCreditBalanceTable.id, currentBalance.id));
+
+        userBalance[0].balance = newBalance;
+        userBalance[0].totalRecharged = newTotalRecharged;
       }
 
-      // 2. 计算新余额
-      const newBalance = userBalance.balance + amount;
-      console.log(`[addBonusCredits] 积分余额更新: ${userBalance.balance} -> ${newBalance}`);
-
-      // 3. 更新用户积分余额
-      await tx
-        .update(userCreditBalanceTable)
-        .set({
-          balance: newBalance,
-          updatedAt: new Date(),
-        })
-        .where(eq(userCreditBalanceTable.id, userBalance.id));
-      
-      console.log(`[addBonusCredits] 积分余额更新成功`);
-
-      // 4. 创建积分交易记录
+      // 2. 创建积分交易记录
       const transactionId = createId();
       await tx.insert(creditTransactionTable).values({
         amount,
-        balanceAfter: newBalance,
+        balanceAfter: userBalance[0].balance,
         createdAt: new Date(),
         description: reason,
         id: transactionId,
@@ -89,124 +334,57 @@ export async function addBonusCredits(
         type: "bonus",
         userId,
       });
-      
-      console.log(`[addBonusCredits] 积分交易记录创建成功: ${transactionId}`);
+
+      console.log(`[addBonusCredits] 成功为用户 ${userId} 添加 ${amount} 积分，新余额: ${userBalance[0].balance}`);
 
       return {
-        added: amount,
-        balance: newBalance,
         success: true,
+        balance: userBalance[0].balance,
+        amountAdded: amount,
         transactionId,
       };
-    });
-
-    console.log(`[addBonusCredits] 成功为用户 ${userId} 添加了 ${amount} 积分，新余额: ${result.balance}`);
-    return result;
-
-  } catch (error) {
-    console.error(`[addBonusCredits] 添加奖励积分失败 - 用户: ${userId}, 积分: ${amount}`, error);
-    
-    // 记录详细的错误信息
-    if (error instanceof Error) {
-      console.error(`[addBonusCredits] 错误详情: ${error.message}`);
-      console.error(`[addBonusCredits] 错误堆栈: ${error.stack}`);
+    } catch (error) {
+      console.error(`[addBonusCredits] 事务失败:`, error);
+      throw error;
     }
-    
-    throw new Error(`添加奖励积分失败: ${error instanceof Error ? error.message : '未知错误'}`);
-  }
+  });
 }
 
 /**
- * 消费积分
- * @param userId 用户ID
- * @param actionType 操作类型
- * @param uploadId 上传ID（可选）
- * @param description 描述（可选）
- * @returns 消费结果
- */
-export async function consumeCredits(
-  userId: string,
-  actionType: string,
-  uploadId?: string,
-  description?: string,
-) {
-  // 获取操作所需积分
-  const config = await getCreditConsumptionConfig(actionType);
-  // 如果未找到配置，则默认为1，并发出警告
-  let creditsRequired = 1;
-  if (!config) {
-    console.warn(`未找到操作类型 "${actionType}" 的积分配置，将默认使用1个积分。`);
-  } else {
-    creditsRequired = config.creditsRequired;
-  }
-
-  // 获取用户积分余额
-  const userBalance = await getUserCreditBalance(userId);
-
-  // 检查积分是否足够
-  if (userBalance.balance < creditsRequired) {
-    return {
-      balance: userBalance.balance,
-      message: "积分不足",
-      required: creditsRequired,
-      success: false,
-    };
-  }
-
-  // 开始数据库事务
-  // 注意：这里使用了简化的事务处理，实际项目中应该使用数据库事务
-  try {
-    // 1. 更新用户积分余额
-    const newBalance = userBalance.balance - creditsRequired;
-    const newTotalConsumed = userBalance.totalConsumed + creditsRequired;
-
-    await db
-      .update(userCreditBalanceTable)
-      .set({
-        balance: newBalance,
-        totalConsumed: newTotalConsumed,
-        updatedAt: new Date(),
-      })
-      .where(eq(userCreditBalanceTable.id, userBalance.id));
-
-    // 2. 创建积分交易记录
-    const transactionDescription =
-      description || `${actionType} 消费${creditsRequired}积分`;
-
-    await db.insert(creditTransactionTable).values({
-      amount: -creditsRequired, // 负数表示消费
-      balanceAfter: newBalance,
-      createdAt: new Date(),
-      description: transactionDescription,
-      id: createId(),
-      metadata: JSON.stringify({
-        actionType,
-        uploadId,
-      }),
-      relatedUploadId: uploadId,
-      type: "consumption",
-      userId,
-    });
-
-    return {
-      balance: newBalance,
-      consumed: creditsRequired,
-      success: true,
-    };
-  } catch (error) {
-    console.error("消费积分失败:", error);
-    throw error;
-  }
-}
-
-/**
- * 创建积分充值记录
+ * 幂等的充值创建函数（防止重复创建）
  * @param userId 用户ID
  * @param packageId 套餐ID
+ * @param idempotencyKey 幂等性密钥
  * @returns 创建的充值记录和客户端密钥
  */
-export async function createCreditRecharge(userId: string, packageId: string) {
-  // 获取套餐信息
+export async function createCreditRechargeIdempotent(
+  userId: string,
+  packageId: string,
+  idempotencyKey: string,
+) {
+  // 1. 检查是否已存在相同的充值记录
+  const existingRecharge = await db.query.creditRechargeTable.findFirst({
+    where: and(
+      eq(creditRechargeTable.userId, userId),
+      eq(creditRechargeTable.metadata, JSON.stringify({ idempotencyKey })),
+    ),
+  });
+
+  if (existingRecharge && existingRecharge.paymentIntentId) {
+    console.log(`使用现有充值记录: ${existingRecharge.id}`);
+    
+    // 获取现有的PaymentIntent
+    const paymentIntent = await stripe.paymentIntents.retrieve(
+      existingRecharge.paymentIntentId,
+    );
+    
+    return {
+      clientSecret: paymentIntent.client_secret,
+      recharge: existingRecharge,
+    };
+  }
+
+  // 2. 获取套餐信息
   const creditPackage = await db.query.creditPackageTable.findFirst({
     where: and(
       eq(creditPackageTable.id, packageId),
@@ -218,92 +396,148 @@ export async function createCreditRecharge(userId: string, packageId: string) {
     throw new Error("积分套餐不存在或已停用");
   }
 
-  // 创建充值记录
-  const rechargeId = createId();
-  const recharge = await db
-    .insert(creditRechargeTable)
-    .values({
-      amount: creditPackage.credits,
-      createdAt: new Date(),
+  return await db.transaction(async (tx: DbTransaction) => {
+    // 3. 创建充值记录
+    const rechargeId = createId();
+    const recharge = await tx
+      .insert(creditRechargeTable)
+      .values({
+        amount: creditPackage.credits,
+        createdAt: new Date(),
+        currency: creditPackage.currency,
+        id: rechargeId,
+        price: creditPackage.price,
+        status: "pending",
+        updatedAt: new Date(),
+        userId,
+        metadata: JSON.stringify({ idempotencyKey, packageId }),
+      })
+      .returning();
+
+    // 4. 创建 Stripe PaymentIntent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: creditPackage.price,
       currency: creditPackage.currency,
-      id: rechargeId,
-      price: creditPackage.price,
-      status: "pending",
-      updatedAt: new Date(),
-      userId,
-    })
-    .returning();
+      metadata: {
+        credits: creditPackage.credits.toString(),
+        packageId,
+        rechargeId,
+        type: "credit_recharge",
+        userId,
+        idempotencyKey,
+      },
+    });
 
-  // 创建 Stripe PaymentIntent
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: creditPackage.price,
-    currency: creditPackage.currency,
-    metadata: {
-      credits: creditPackage.credits.toString(),
-      packageId,
-      rechargeId,
-      type: "credit_recharge",
-      userId,
-    },
+    // 5. 更新充值记录的 PaymentIntent ID
+    await tx
+      .update(creditRechargeTable)
+      .set({
+        paymentIntentId: paymentIntent.id,
+        updatedAt: new Date(),
+      })
+      .where(eq(creditRechargeTable.id, rechargeId));
+
+    return {
+      clientSecret: paymentIntent.client_secret,
+      recharge: recharge[0],
+    };
   });
+}
 
-  // 更新充值记录的 PaymentIntent ID
-  await db
-    .update(creditRechargeTable)
-    .set({
-      paymentIntentId: paymentIntent.id,
-      updatedAt: new Date(),
-    })
-    .where(eq(creditRechargeTable.id, rechargeId));
+// ========== 兼容性函数 - 保持原有接口不变 ==========
 
+/**
+ * 添加奖励积分（兼容性函数）
+ * @deprecated 使用 addBonusCreditsWithTransaction 替代
+ */
+export async function addBonusCredits(
+  userId: string,
+  amount: number,
+  reason: string,
+  metadata: Record<string, any> = {},
+) {
+  const result = await addBonusCreditsWithTransaction(userId, amount, reason, metadata);
   return {
-    clientSecret: paymentIntent.client_secret,
-    recharge: recharge[0],
+    added: result.amountAdded,
+    balance: result.balance,
+    success: result.success,
+    transactionId: result.transactionId,
   };
 }
 
 /**
+ * 消费积分（兼容性函数）
+ * @deprecated 使用 consumeCreditsWithTransaction 替代
+ */
+export async function consumeCredits(
+  userId: string,
+  actionType: string,
+  uploadId?: string,
+  description?: string,
+) {
+  return await consumeCreditsWithTransaction(userId, actionType, uploadId, description);
+}
+
+/**
+ * 创建积分充值记录和支付意图（兼容性函数）
+ * @deprecated 使用 createCreditRechargeIdempotent 替代
+ */
+export async function createCreditRecharge(userId: string, packageId: string) {
+  const idempotencyKey = createId(); // 生成临时的幂等性密钥
+  return await createCreditRechargeIdempotent(userId, packageId, idempotencyKey);
+}
+
+/**
+ * 处理积分充值成功（兼容性函数）
+ * @deprecated 使用 handleCreditRechargeWithTransaction 替代
+ */
+export async function handleCreditRechargeSuccess(
+  rechargeId: string,
+  paymentIntentId: string,
+) {
+  const result = await handleCreditRechargeWithTransaction(rechargeId, paymentIntentId);
+  return result.recharge;
+}
+
+// ========== 原有的辅助函数 ==========
+
+/**
  * 获取积分消费配置
  * @param actionType 操作类型
- * @returns 积分消费配置
+ * @returns 配置信息
  */
 export async function getCreditConsumptionConfig(actionType: string) {
-  const config = await db.query.creditConsumptionConfigTable.findFirst({
+  return await db.query.creditConsumptionConfigTable.findFirst({
     where: and(
       eq(creditConsumptionConfigTable.actionType, actionType),
       eq(creditConsumptionConfigTable.isActive, 1),
     ),
   });
-
-  return config;
 }
 
 /**
- * 获取所有积分套餐
- * @returns 积分套餐列表
+ * 获取积分套餐列表
+ * @returns 套餐列表
  */
 export async function getCreditPackages() {
-  const packages = await db.query.creditPackageTable.findMany({
-    orderBy: [sql`${creditPackageTable.sortOrder} ASC`],
+  return await db.query.creditPackageTable.findMany({
     where: eq(creditPackageTable.isActive, 1),
+    orderBy: [creditPackageTable.sortOrder, creditPackageTable.price],
   });
-
-  return packages;
 }
 
 /**
  * 获取用户积分余额
  * @param userId 用户ID
- * @returns 用户积分余额信息
+ * @returns 用户积分余额
  */
 export async function getUserCreditBalance(userId: string) {
-  // 查询用户积分余额
-  const balance = await db.query.userCreditBalanceTable.findFirst({
+  let userBalance = await db.query.userCreditBalanceTable.findFirst({
     where: eq(userCreditBalanceTable.userId, userId),
   });
 
-  // 如果不存在，创建一个新的余额记录
-  if (!balance) {
+  // 如果用户没有积分记录，则创建一个
+  if (!userBalance) {
     const newBalance = await db
       .insert(userCreditBalanceTable)
       .values({
@@ -317,132 +551,48 @@ export async function getUserCreditBalance(userId: string) {
       })
       .returning();
 
-    return newBalance[0];
+    userBalance = newBalance[0];
   }
 
-  return balance;
+  return userBalance;
 }
 
 /**
- * 获取用户积分充值记录
+ * 获取用户充值记录
  * @param userId 用户ID
  * @param limit 限制数量
  * @param offset 偏移量
- * @returns 用户积分充值记录
+ * @returns 充值记录列表
  */
 export async function getUserCreditRecharges(
   userId: string,
   limit = 10,
   offset = 0,
 ) {
-  const recharges = await db.query.creditRechargeTable.findMany({
+  return await db.query.creditRechargeTable.findMany({
+    where: eq(creditRechargeTable.userId, userId),
     limit,
     offset,
-    orderBy: [sql`${creditRechargeTable.createdAt} DESC`],
-    where: eq(creditRechargeTable.userId, userId),
+    orderBy: [creditRechargeTable.createdAt],
   });
-
-  return recharges;
 }
 
 /**
- * 获取用户积分交易记录
+ * 获取用户交易记录
  * @param userId 用户ID
  * @param limit 限制数量
  * @param offset 偏移量
- * @returns 用户积分交易记录
+ * @returns 交易记录列表
  */
 export async function getUserCreditTransactions(
   userId: string,
   limit = 10,
   offset = 0,
 ) {
-  const transactions = await db.query.creditTransactionTable.findMany({
+  return await db.query.creditTransactionTable.findMany({
+    where: eq(creditTransactionTable.userId, userId),
     limit,
     offset,
-    orderBy: [sql`${creditTransactionTable.createdAt} DESC`],
-    where: eq(creditTransactionTable.userId, userId),
+    orderBy: [creditTransactionTable.createdAt],
   });
-
-  return transactions;
-}
-
-/**
- * 处理积分充值成功
- * @param rechargeId 充值记录ID
- * @param paymentIntentId 支付意图ID
- * @returns 处理结果
- */
-export async function handleCreditRechargeSuccess(
-  rechargeId: string,
-  paymentIntentId: string,
-) {
-  // 获取充值记录
-  const recharge = await db.query.creditRechargeTable.findFirst({
-    where: and(
-      eq(creditRechargeTable.id, rechargeId),
-      eq(creditRechargeTable.paymentIntentId, paymentIntentId),
-    ),
-  });
-
-  if (!recharge) {
-    throw new Error("充值记录不存在");
-  }
-
-  // 如果已经处理过，直接返回
-  if (recharge.status === "completed") {
-    return { recharge, success: true };
-  }
-
-  // 开始数据库事务
-  // 注意：这里使用了简化的事务处理，实际项目中应该使用数据库事务
-  try {
-    // 1. 更新充值记录状态
-    await db
-      .update(creditRechargeTable)
-      .set({
-        status: "completed",
-        updatedAt: new Date(),
-      })
-      .where(eq(creditRechargeTable.id, rechargeId));
-
-    // 2. 获取用户当前积分余额
-    const userBalance = await getUserCreditBalance(recharge.userId);
-
-    // 3. 更新用户积分余额
-    const newBalance = userBalance.balance + recharge.amount;
-    const newTotalRecharged = userBalance.totalRecharged + recharge.amount;
-
-    await db
-      .update(userCreditBalanceTable)
-      .set({
-        balance: newBalance,
-        totalRecharged: newTotalRecharged,
-        updatedAt: new Date(),
-      })
-      .where(eq(userCreditBalanceTable.id, userBalance.id));
-
-    // 4. 创建积分交易记录
-    await db.insert(creditTransactionTable).values({
-      amount: recharge.amount,
-      balanceAfter: newBalance,
-      createdAt: new Date(),
-      description: `充值${recharge.amount}积分`,
-      id: createId(),
-      metadata: JSON.stringify({
-        currency: recharge.currency,
-        paymentIntentId,
-        price: recharge.price,
-        rechargeId,
-      }),
-      relatedRechargeId: rechargeId,
-      type: "recharge",
-      userId: recharge.userId,
-    });
-
-    return { recharge, success: true };
-  } catch (error) {
-    console.error("处理积分充值失败:", error);
-    throw error;
-  }
 }

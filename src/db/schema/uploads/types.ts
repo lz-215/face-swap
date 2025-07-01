@@ -11,7 +11,7 @@ export type NewFaceSwapHistory = typeof faceSwapHistoryTable.$inferInsert;
 export type FaceSwapStatus = "processing" | "completed" | "failed";
 
 // 人脸交换历史记录带元数据类型
-export interface FaceSwapHistoryWithMetadata extends FaceSwapHistory {
+export interface FaceSwapHistoryWithMetadata extends Omit<FaceSwapHistory, 'metadata'> {
   metadata?: {
     originImageSize?: number;
     faceImageSize?: number;

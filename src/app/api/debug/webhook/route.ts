@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const eventId = searchParams.get("eventId");
 
     if (eventId) {
-      // 查看特定的webhook事件
+      // 查看特定的 webhook 事件
       console.log(`[debug] 获取webhook事件: ${eventId}`);
       const event = await stripe.events.retrieve(eventId);
       
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // 获取最近的webhook事件
+    // 获取最近的 webhook 事件
     console.log(`[debug] 获取最近的webhook事件`);
     const events = await stripe.events.list({ limit: 10 });
     
@@ -55,13 +55,13 @@ export async function GET(request: NextRequest) {
       id: event.id,
       type: event.type,
       created: new Date(event.created * 1000).toISOString(),
-      objectId: event.data.object.id,
+      objectId: (event.data.object as any).id,
     }));
 
     return NextResponse.json({
       success: true,
       recentEvents: eventSummary,
-      message: "最近的10个webhook事件",
+      message: "最近的 10 个 webhook 事件",
     });
 
   } catch (error) {
@@ -79,7 +79,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { action, customerId, userId } = await request.json();
+    const { action, customerId, userId } = await request.json() as {
+      action: string;
+      customerId: string;
+      userId: string;
+    };
 
     if (action === "link-customer") {
       // 手动关联客户到用户
@@ -112,7 +116,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "simulate-webhook") {
-      // 模拟webhook事件处理（用于测试）
+      // 模拟 webhook 事件处理（用于测试）
       if (!customerId) {
         return NextResponse.json(
           { error: "customerId 是必需的", success: false },
@@ -137,7 +141,7 @@ export async function POST(request: NextRequest) {
 
       const subscription = subscriptions.data[0];
       
-      // 模拟webhook事件
+      // 模拟 webhook 事件
       const mockEvent = {
         type: "customer.subscription.created",
         data: {

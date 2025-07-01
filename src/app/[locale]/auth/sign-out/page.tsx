@@ -6,13 +6,13 @@ import {
   PageHeader,
   PageHeaderDescription,
   PageHeaderHeading,
-} from "~/ui/components/page-header";
-import { Shell } from "~/ui/primitives/shell";
+} from "~/components/page-header";
+import { Shell } from "~/components/ui/shell";
 
 export const metadata: Metadata = {
   description: "Sign out of your account",
   metadataBase: new URL(
-    process.env.NEXT_SERVER_APP_URL || "http://localhost:3000",
+    process.env.NEXT_SERVER_APP_URL || "http://localhost:3000"
   ),
   title: "Sign out",
 };
