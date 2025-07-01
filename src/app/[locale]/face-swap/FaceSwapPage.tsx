@@ -58,6 +58,7 @@ export default function FaceSwapPage() {
   const [templateClickStep, setTemplateClickStep] = useState<0 | 1>(0);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
+  const [watermarkPreview, setWatermarkPreview] = useState<string | null>(null); // 水印预览图片
 
   // Hooks
   const searchParams = useSearchParams();
@@ -369,16 +370,18 @@ export default function FaceSwapPage() {
         try {
           // 添加水印
           const watermarkedUrl = await addWatermarkToImage(result, {
-            text: "AI换脸工具网站 - 升级会员免水印",
+            text: "Swapify.AI",
             fontSize: Math.max(
-              24,
-              Math.min(48, Math.floor(window.innerWidth * 0.03))
+              28,
+              Math.min(42, Math.floor(window.innerWidth * 0.025))
             ),
+            fontFamily:
+              'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
             color: "#ffffff",
-            opacity: 0.8,
+            opacity: 0.9,
             position: "bottom-right",
-            margin: 30,
-            rotation: -15,
+            margin: 25,
+            rotation: 0, // 正放，不旋转
           });
 
           downloadUrl = watermarkedUrl;

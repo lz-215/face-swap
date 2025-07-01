@@ -246,7 +246,25 @@
       "邮件支持"
     ],
     "pricingFeatures": "可处理120张图片；无水印；优先处理；邮件支持",
-    "pricingFeaturesMonthly": "可处理120张图片；无水印；优先处理；邮件支持"
+    "pricingFeaturesMonthly": "可处理120张图片；无水印；优先处理；邮件支持",
+    "choosePlan": "选择您的套餐",
+    "stripePlans": "Stripe 套餐",
+    "customPlans": "自定义套餐",
+    "instantAccess": "即时访问",
+    "instantAccessDesc": "订阅后立即开始使用所有功能",
+    "securePayments": "安全支付",
+    "securePaymentsDesc": "您的支付信息受到 Stripe 安全保护",
+    "cancelAnytime": "随时取消",
+    "cancelAnytimeDesc": "无长期承诺，随时可以取消您的订阅",
+    "pricingSubtitle": "选择最适合您需求的套餐。所有套餐都包含我们的核心功能，使用限额不同。",
+    "frequentlyAskedQuestions": "常见问题",
+    "faqSubtitle": "获取有关我们定价和订阅计划的常见问题的答案。",
+    "faqWhatIncluded": "订阅包含什么功能？",
+    "faqWhatIncludedAnswer": "所有订阅计划都包括无限次换脸、高质量输出、优先处理和邮件支持。",
+    "faqCancelQuestion": "可以随时取消吗？",
+    "faqCancelAnswer": "是的，您可以随时取消订阅。无需长期承诺。",
+    "faqRefundQuestion": "提供退款吗？",
+    "faqRefundAnswer": "我们为所有新订阅提供30天退款保证。"
   },
   "Settings": {
     "account": "账户",

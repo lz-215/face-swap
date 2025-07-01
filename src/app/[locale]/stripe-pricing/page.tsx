@@ -1,9 +1,7 @@
-"use client";
-
 import { useTranslations } from "next-intl";
 import { StripePricingTable } from "~/components/payment/stripe-pricing-table";
 
-export default function PricingPage() {
+export default function StripePricingPage() {
   const t = useTranslations("Payment");
 
   return (
@@ -30,7 +28,7 @@ export default function PricingPage() {
           />
         </div>
 
-        {/* 功能介绍部分 */}
+        {/* 额外的信息部分 */}
         <div className="mt-16 text-center">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <div className="flex flex-col items-center p-6">
@@ -110,67 +108,6 @@ export default function PricingPage() {
                 {t("cancelAnytimeDesc", {
                   defaultMessage:
                     "No long-term commitments. Cancel your subscription anytime",
-                })}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* 常见问题部分 */}
-        <div className="mt-20">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">
-              {t("frequentlyAskedQuestions", {
-                defaultMessage: "Frequently Asked Questions",
-              })}
-            </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              {t("faqSubtitle", {
-                defaultMessage:
-                  "Get answers to common questions about our pricing and subscription plans.",
-              })}
-            </p>
-          </div>
-
-          <div className="max-w-3xl mx-auto space-y-4">
-            <div className="border rounded-lg p-6">
-              <h3 className="font-semibold mb-2">
-                {t("faqWhatIncluded", {
-                  defaultMessage: "What's included in the subscription?",
-                })}
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                {t("faqWhatIncludedAnswer", {
-                  defaultMessage:
-                    "All subscription plans include unlimited face swaps, high-quality outputs, priority processing, and email support.",
-                })}
-              </p>
-            </div>
-
-            <div className="border rounded-lg p-6">
-              <h3 className="font-semibold mb-2">
-                {t("faqCancelQuestion", {
-                  defaultMessage: "Can I cancel anytime?",
-                })}
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                {t("faqCancelAnswer", {
-                  defaultMessage:
-                    "Yes, you can cancel your subscription at any time. No long-term commitments required.",
-                })}
-              </p>
-            </div>
-
-            <div className="border rounded-lg p-6">
-              <h3 className="font-semibold mb-2">
-                {t("faqRefundQuestion", {
-                  defaultMessage: "Do you offer refunds?",
-                })}
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                {t("faqRefundAnswer", {
-                  defaultMessage:
-                    "We offer a 30-day money-back guarantee for all new subscriptions.",
                 })}
               </p>
             </div>

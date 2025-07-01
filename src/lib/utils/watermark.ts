@@ -14,14 +14,14 @@ interface WatermarkOptions {
 }
 
 const DEFAULT_WATERMARK_OPTIONS: Required<WatermarkOptions> = {
-  text: 'AI换脸工具网站',
-  fontSize: 24,
-  fontFamily: 'Arial, sans-serif',
+  text: 'Swapify.AI - 升级会员免水印',
+  fontSize: 32,
+  fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   color: '#ffffff',
-  opacity: 0.7,
+  opacity: 0.9,
   position: 'bottom-right',
-  margin: 20,
-  rotation: -15,
+  margin: 25,
+  rotation: 0,
 };
 
 /**
@@ -82,15 +82,15 @@ export async function addWatermarkToImage(
         }
         
         // 设置文字样式
-        ctx.font = `${opts.fontSize}px ${opts.fontFamily}`;
+        ctx.font = `bold ${opts.fontSize}px ${opts.fontFamily}`;
         ctx.fillStyle = opts.color;
         ctx.globalAlpha = opts.opacity;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         
-        // 添加文字阴影以提高可见性
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-        ctx.shadowBlur = 4;
+        // 添加更专业的阴影效果，提升品牌感
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+        ctx.shadowBlur = 6;
         ctx.shadowOffsetX = 2;
         ctx.shadowOffsetY = 2;
         
@@ -141,38 +141,41 @@ function calculateWatermarkPosition(
   ctx: CanvasRenderingContext2D
 ): { x: number; y: number } {
   // 测量文字尺寸
-  ctx.font = `${fontSize}px Arial`;
+  ctx.font = `bold ${fontSize}px Inter, Arial`;
   const textMetrics = ctx.measureText(text);
   const textWidth = textMetrics.width;
   const textHeight = fontSize;
+  
+  // 动态调整边距，确保文字不会超出画布
+  const adaptiveMargin = Math.max(margin, Math.min(textWidth * 0.1, 50));
   
   let x: number;
   let y: number;
   
   switch (position) {
     case 'top-left':
-      x = margin + textWidth / 2;
-      y = margin + textHeight / 2;
+      x = adaptiveMargin + textWidth / 2;
+      y = adaptiveMargin + textHeight / 2;
       break;
     case 'top-right':
-      x = canvasWidth - margin - textWidth / 2;
-      y = margin + textHeight / 2;
+      x = canvasWidth - adaptiveMargin - textWidth / 2;
+      y = adaptiveMargin + textHeight / 2;
       break;
     case 'bottom-left':
-      x = margin + textWidth / 2;
-      y = canvasHeight - margin - textHeight / 2;
+      x = adaptiveMargin + textWidth / 2;
+      y = canvasHeight - adaptiveMargin - textHeight / 2 - 30; // 上移30像素
       break;
     case 'bottom-right':
-      x = canvasWidth - margin - textWidth / 2;
-      y = canvasHeight - margin - textHeight / 2;
+      x = canvasWidth - adaptiveMargin - textWidth / 2;
+      y = canvasHeight - adaptiveMargin - textHeight / 2 - 30; // 上移30像素
       break;
     case 'center':
       x = canvasWidth / 2;
       y = canvasHeight / 2;
       break;
     default:
-      x = canvasWidth - margin - textWidth / 2;
-      y = canvasHeight - margin - textHeight / 2;
+      x = canvasWidth - adaptiveMargin - textWidth / 2;
+      y = canvasHeight - adaptiveMargin - textHeight / 2 - 30; // 上移30像素
   }
   
   return { x, y };

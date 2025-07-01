@@ -171,7 +171,25 @@
       "No watermark", 
       "Priority processing",
       "Email support"
-    ]
+    ],
+    "choosePlan": "Choose Your Plan",
+    "stripePlans": "Stripe Plans",
+    "customPlans": "Custom Plans",
+    "instantAccess": "Instant Access",
+    "instantAccessDesc": "Start using all features immediately after subscription",
+    "securePayments": "Secure Payments",
+    "securePaymentsDesc": "Your payment information is protected by Stripe's security",
+    "cancelAnytime": "Cancel Anytime",
+    "cancelAnytimeDesc": "No long-term commitments. Cancel your subscription anytime",
+    "pricingSubtitle": "Select the perfect plan for your needs. All plans include our core features with different usage limits.",
+    "frequentlyAskedQuestions": "Frequently Asked Questions",
+    "faqSubtitle": "Get answers to common questions about our pricing and subscription plans.",
+    "faqWhatIncluded": "What's included in the subscription?",
+    "faqWhatIncludedAnswer": "All subscription plans include unlimited face swaps, high-quality outputs, priority processing, and email support.",
+    "faqCancelQuestion": "Can I cancel anytime?",
+    "faqCancelAnswer": "Yes, you can cancel your subscription at any time. No long-term commitments required.",
+    "faqRefundQuestion": "Do you offer refunds?",
+    "faqRefundAnswer": "We offer a 30-day money-back guarantee for all new subscriptions."
   },
   "Settings": {
     "account": "Account",
