@@ -351,23 +351,37 @@ async function handleSubscriptionBonus(
   try {
     const { amount, priceId } = productInfo;
     
-    // 根据价格确定奖励积分数量
-    let creditsToAdd = 120; // 默认月付积分
+    // 根据价格确定奖励积分数量（扩展更多价格选项）
+    let creditsToAdd = 100; // 默认积分
     let description = "订阅成功赠送积分";
 
+    console.log(`[webhook] 处理订阅积分奖励，价格信息:`, {
+      priceId,
+      amount,
+      subscriptionId: subscription.id,
+    });
+
+    // 根据不同的价格 ID 或金额来确定积分
     if (amount === 1690) {
       creditsToAdd = 120;
       description = "月付订阅成功赠送120积分";
     } else if (amount === 990) {
       creditsToAdd = 1800;
       description = "年付订阅成功赠送1800积分";
+    } else {
+      // 通用逻辑：根据金额计算积分（例如每美分1积分）
+      // 这里可以根据实际业务需求调整
+      creditsToAdd = Math.max(100, Math.floor(amount / 100)); // 每美元100积分，最少100积分
+      description = `订阅成功赠送${creditsToAdd}积分（$${(amount / 100).toFixed(2)}套餐）`;
     }
 
     console.log(`[webhook] 开始为订阅用户添加积分:`, {
       userId,
       subscriptionId: subscription.id,
       amount,
+      priceId,
       creditsToAdd,
+      description,
     });
 
     // 使用改进的事务处理函数
@@ -381,11 +395,13 @@ async function handleSubscriptionBonus(
         amount,
         type: "subscription_bonus",
         webhookEventType: "customer.subscription.created",
+        source: "stripe_pricing_table",
       }
     );
 
     console.log(`[webhook] 订阅积分奖励成功:`, {
       userId,
+      subscriptionId: subscription.id,
       creditsAdded: creditsToAdd,
       newBalance: result.balance,
       transactionId: result.transactionId,
@@ -401,6 +417,14 @@ async function handleSubscriptionBonus(
     
     // 不抛出错误，避免影响订阅创建
     console.warn(`[webhook] 积分奖励失败但不影响订阅，请手动处理用户 ${userId} 的积分`);
+    
+    // 返回失败结果但不抛出异常
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "未知错误",
+      userId,
+      subscriptionId: subscription.id,
+    };
   }
 }
 

@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { Badge } from "~/components/ui/badge";
@@ -15,16 +22,29 @@ import {
   Check,
   Sparkles,
   TrendingUp,
+  BookOpen,
+  Calendar,
+  CheckCircle,
+  Crown,
+  Upload,
+  Users,
 } from "lucide-react";
 import { useSupabaseSession } from "~/lib/supabase-auth-client";
 import { useTranslations } from "next-intl";
 import { useCreditsV2 } from "~/lib/hooks/use-credits-v2";
+import { useSubscription } from "~/lib/hooks/use-subscription";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const { user, loading } = useSupabaseSession();
   const router = useRouter();
   const t = useTranslations("Dashboard");
   const [copied, setCopied] = useState(false);
+  const {
+    hasActiveSubscription,
+    subscriptions,
+    isLoading: subscriptionLoading,
+  } = useSubscription();
 
   // 使用真实的积分系统
   const {
@@ -35,6 +55,11 @@ export default function DashboardPage() {
     error: creditsError,
     fetchCredits,
   } = useCreditsV2();
+
+  // 获取当前活跃订阅信息
+  const activeSubscription = subscriptions.find(
+    (sub) => sub.status === "active"
+  );
 
   // 刷新积分数据
   useEffect(() => {
@@ -312,6 +337,143 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </div>
+        )}
+
+        {/* Membership Status Card */}
+        {!subscriptionLoading && (
+          <Card
+            className={`${
+              hasActiveSubscription
+                ? "border-yellow-200 bg-gradient-to-r from-yellow-50 to-amber-50"
+                : "border-gray-200"
+            }`}
+          >
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`p-3 rounded-xl ${
+                      hasActiveSubscription ? "bg-yellow-100" : "bg-gray-100"
+                    }`}
+                  >
+                    <Crown
+                      className={`h-6 w-6 ${
+                        hasActiveSubscription
+                          ? "text-yellow-600"
+                          : "text-gray-400"
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      {t("membershipStatus", { defaultMessage: "会员状态" })}
+                    </CardTitle>
+                    <CardDescription>
+                      {hasActiveSubscription
+                        ? t("premiumMemberActive", {
+                            defaultMessage: "您的高级会员正在享受中",
+                          })
+                        : t("noActiveMembership", {
+                            defaultMessage: "您还不是会员，升级享受更多特权",
+                          })}
+                    </CardDescription>
+                  </div>
+                </div>
+                <Badge
+                  variant={hasActiveSubscription ? "default" : "outline"}
+                  className={
+                    hasActiveSubscription
+                      ? "bg-green-100 text-green-800 border-green-300"
+                      : ""
+                  }
+                >
+                  {hasActiveSubscription
+                    ? t("active", { defaultMessage: "已激活" })
+                    : t("inactive", { defaultMessage: "未激活" })}
+                </Badge>
+              </div>
+            </CardHeader>
+
+            {hasActiveSubscription && activeSubscription ? (
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      {t("planType", { defaultMessage: "套餐类型" })}:
+                    </span>
+                    <span className="font-medium">
+                      {activeSubscription.productId}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      {t("subscriptionId", { defaultMessage: "订阅ID" })}:
+                    </span>
+                    <span className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                      {activeSubscription.subscriptionId}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">
+                      {t("memberSince", { defaultMessage: "加入时间" })}:
+                    </span>
+                    <span className="font-medium">
+                      {new Date(
+                        activeSubscription.createdAt
+                      ).toLocaleDateString("zh-CN")}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            ) : (
+              <CardContent>
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <h4 className="font-medium mb-2">
+                      {t("memberBenefits", { defaultMessage: "会员特权" })}
+                    </h4>
+                    <ul className="text-sm text-muted-foreground space-y-1">
+                      <li className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                        {t("benefit1", { defaultMessage: "更多积分赠送" })}
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                        {t("benefit2", { defaultMessage: "优先客服支持" })}
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                        {t("benefit3", { defaultMessage: "专属功能访问" })}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            )}
+
+            <CardFooter>
+              {hasActiveSubscription ? (
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/dashboard/billing">
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    {t("manageMembership", { defaultMessage: "管理会员" })}
+                  </Link>
+                </Button>
+              ) : (
+                <Button
+                  asChild
+                  className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700"
+                >
+                  <Link href="/pricing">
+                    <Crown className="w-4 h-4 mr-2" />
+                    {t("upgradeToPremium", {
+                      defaultMessage: "升级为高级会员",
+                    })}
+                  </Link>
+                </Button>
+              )}
+            </CardFooter>
+          </Card>
         )}
       </div>
     </div>
